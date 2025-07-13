@@ -30,8 +30,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Ph
     @Unique
     private boolean origins$isPhasing;
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {super(world, pos, yaw, gameProfile);}
-
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {super(world, gameProfile);}
+    
     @Unique
     public void origins$syncPhaseState() {
         boolean phasing = origins$isPhasing();
