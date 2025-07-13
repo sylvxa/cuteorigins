@@ -13,6 +13,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -40,17 +41,18 @@ public class DamageEffect extends Effect {
     public void onTick(ServerPlayerEntity player) {
         if (!condition.test(player)) return;
         assert player.getServer() != null;
-
+    
         int now = player.getServer().getTicks();
         int lastTickDamage = timestamps.computeIfAbsent(player.getUuid(), ignored -> now);
         if ((lastTickDamage + speed) < now) {
-            Registry<DamageType> damageTypeRegistry = player.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE);
-            RegistryEntry<DamageType> damageTypeEntry = damageTypeRegistry.getEntry(damageType).orElse(damageTypeRegistry.getOrThrow(DamageTypes.MAGIC));
-
-            player.damage(player.getServerWorld(), new DamageSource(damageTypeEntry), damage);
+            RegistryKey<DamageType> damageTypeKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, damageType);
+            DamageSource source = player.getWorld().getDamageSources().create(damageTypeKey);
+            player.damage(player.getWorld(), source, damage);
             timestamps.put(player.getUuid(), now);
         }
     }
+
+
 
     public static Effect fromJson(JsonObject object) {
         return new DamageEffect(object.get("damage").getAsFloat(), object.get("speed").getAsInt(), JsonHelper.jsonStringToIdentifier(object.get("damage_type")), Condition.fromJson(object.getAsJsonObject("condition")));
