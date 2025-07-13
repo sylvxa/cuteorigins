@@ -1,6 +1,5 @@
 package lol.sylvie.cuteorigins.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 import lol.sylvie.cuteorigins.mixininterfaces.Phasable;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -30,7 +29,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Ph
     @Unique
     private boolean origins$isPhasing;
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {super(world, pos, yaw, gameProfile);}
+    public ServerPlayerEntityMixin(World world, BlockPos ignoredPos, float ignoredYaw, GameProfile gameProfile) {super(world, gameProfile);}
 
     @Unique
     public void origins$syncPhaseState() {
@@ -74,7 +73,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Ph
         this.origins$setPhasing(value);
         this.origins$syncPhaseState();
     }
-
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void origins$phaseTick(CallbackInfo ci) {
