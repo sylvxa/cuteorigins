@@ -10,6 +10,8 @@ import java.util.List;
 public class ShulkerInventory extends SimpleInventory {
     private static final int SIZE = 9;
 
+    // TODO: items lose their position in the inventory upon restart
+    // :(
     public static final Codec<ShulkerInventory> CODEC = ItemStack.CODEC.sizeLimitedListOf(SIZE)
             .xmap(
                     list -> new ShulkerInventory(
