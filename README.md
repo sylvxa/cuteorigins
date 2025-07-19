@@ -4,7 +4,7 @@
 
 ![A composite image of the mod creators skin and the logo of the original Origins mod](src/main/resources/assets/cuteorigins/icon.png)
 
-An ***unofficial*** server-side "port" of the Origin's mod, built with Bedrock & vanilla support.
+An ***unofficial*** server-side "port" of the Origins mod, built with Bedrock & vanilla support.
 
 ## ⚠️ WARNING!
 
