@@ -2,15 +2,15 @@
 
 > (a.k.a. cuteorigins, sylviesorigins looked ugly)
 
-![A composite image of the mod creators skin and the logo of the original Origins mod](src/main/resources/assets/cuteorigins/icon.png)
+![A composite image of the mod creator's skin, alongside the logo of the original Origins mod](src/main/resources/assets/cuteorigins/icon.png)
 
-An ***unofficial*** server-side "port" of the Origins mod, built with Bedrock & vanilla support.
+**cuteorigins** is an ***unofficial*** server-side "port" of the Origins mod, built with support for both vanilla and Bedrock Edition clients.
 
 ## ⚠️ WARNING!
 
-While I can't stop you from doing so, I wouldn't recommend using this mod on a server with untrusted players. This mod is in it's alpha stages, as I wrote 3/4ths of this mod at three in the morning for my private server and there are almost certainly bugs in it. If you find one of these and would like to help out, make an issue or a pull request.
+While I can't stop you from doing so, I wouldn't recommend using this mod on a server with untrusted players. This mod is in its alpha stages, as I wrote most of this mod at three in the morning for my private server. As such, there are almost certainly bugs in it. If you find one of these and would like to help out, make an issue or a pull request.
 
-While most origins work with Bedrock, about a quarter of them do not. Bedrock lacks a lot of necessary attributes and unfortunately I didn't have enough time to work around all of them. Here is a current list of known issues, if you are a developer and would like to help out, please do so!
+While most Origins work with Bedrock, a few do not. Bedrock lacks a lot of necessary attributes, and unfortunately I didn't have enough time to work around all of them. Here is a current list of known issues. If you are a developer and would like to help out, please do so!
 
 - Enderians are not given extra reach on Bedrock
 - Merlings are not given the swim speed boost nor the underwater breaking speed buff on Bedrock
@@ -26,7 +26,7 @@ While most origins work with Bedrock, about a quarter of them do not. Bedrock la
 
 ## 🔨 Usage
 
-1. Install the mod on a 1.21.4 Fabric server along with the [Fabric API](https://modrinth.com/mod/fabric-api)
+1. Install the mod on a 1.21.4 Fabric server alongside [Fabric API](https://modrinth.com/mod/fabric-api)
 2. Log onto the server and pick your origin!
 
 ## 🫂 Credits
