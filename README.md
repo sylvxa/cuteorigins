@@ -26,7 +26,7 @@ While most Origins work with Bedrock, a few do not. Bedrock lacks a lot of neces
 
 ## 🔨 Usage
 
-1. Install the mod on a 1.21.4 Fabric server alongside [Fabric API](https://modrinth.com/mod/fabric-api)
+1. Install the mod on a 1.21.4+ Fabric server alongside [Fabric API](https://modrinth.com/mod/fabric-api)
 2. Log onto the server and pick your origin!
 
 ## 🫂 Credits
