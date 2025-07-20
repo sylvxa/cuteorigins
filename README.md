@@ -4,7 +4,7 @@
 
 ![A composite image of the mod creator's skin, alongside the logo of the original Origins mod](src/main/resources/assets/cuteorigins/icon.png)
 
-**cuteorigins** is an ***unofficial*** server-side "port" of the Origins mod, built with support for both vanilla and Bedrock Edition clients.
+**Sylvie's Origins** is an ***unofficial*** server-side "port" of the Origins mod, built with support for both vanilla and Bedrock Edition clients.
 
 ## ⚠️ WARNING!
 
