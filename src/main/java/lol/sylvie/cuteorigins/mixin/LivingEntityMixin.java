@@ -39,7 +39,7 @@ public abstract class LivingEntityMixin {
 
         Direction direction = player.getHorizontalFacing();
         BlockPos pos = player.getBlockPos().add(direction.getVector());
-        if (player.getWorld().getBlockState(pos).isAir()) {
+        if (player.getEntityWorld().getBlockState(pos).isAir()) {
             return false;
         }
 

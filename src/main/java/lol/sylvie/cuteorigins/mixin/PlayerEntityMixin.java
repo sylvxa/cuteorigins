@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
     // Damage logic
-    @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/PlayerLikeEntity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     public void origins$modifyDamage(Args args) {
         DamageSource source = args.get(1);
 

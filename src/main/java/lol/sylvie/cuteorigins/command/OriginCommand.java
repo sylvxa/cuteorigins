@@ -53,7 +53,7 @@ public class OriginCommand {
         if (origin == null) throw ORIGIN_NOT_FOUND_EXCEPTION.create(originId);
 
         StateManager.getPlayerState(player).setOrigin(player, origin);
-        context.getSource().sendFeedback(() -> Text.translatable("commands.origin.set.success", player.getGameProfile().getName(), origin.getName()), true);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.origin.set.success", player.getGameProfile().name(), origin.getName()), true);
         return 1;
     }
 

@@ -9,8 +9,11 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -37,14 +40,15 @@ public class DamageEffect extends Effect {
     @Override
     public void onTick(ServerPlayerEntity player) {
         if (!condition.test(player)) return;
-        assert player.getServer() != null;
+        ServerWorld world = player.getEntityWorld();
+        MinecraftServer server = world.getServer();
 
-        int now = player.getServer().getTicks();
+        int now = server.getTicks();
         int lastTickDamage = timestamps.computeIfAbsent(player.getUuid(), ignored -> now);
         if ((lastTickDamage + speed) < now) {
             RegistryKey<DamageType> damageTypeKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, damageType);
-            DamageSource source = player.getWorld().getDamageSources().create(damageTypeKey);
-            player.damage(player.getWorld(), source, damage);
+            DamageSource source = world.getDamageSources().create(damageTypeKey);
+            player.damage(world, source, damage);
             timestamps.put(player.getUuid(), now);
         }
     }

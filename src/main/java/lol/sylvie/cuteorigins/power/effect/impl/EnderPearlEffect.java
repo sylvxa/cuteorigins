@@ -18,7 +18,7 @@ public class EnderPearlEffect extends Effect {
 
     @Override
     public void onAction(ServerPlayerEntity player) {
-        World world = player.getWorld();
+        World world = player.getEntityWorld();
         EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, player, Items.ENDER_PEARL.getDefaultStack());
         enderPearlEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1.5F, 1.0F);
         world.spawnEntity(enderPearlEntity);

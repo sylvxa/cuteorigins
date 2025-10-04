@@ -20,11 +20,11 @@ public class Condition {
 
     // MobEntity.class
     private boolean isAffectedByDaylight(LivingEntity entity, boolean ignoreWater) {
-        if (entity.getWorld().isDay() && !entity.getWorld().isClient) {
+        if (entity.getEntityWorld().isDay() && !entity.getEntityWorld().isClient()) {
             float f = entity.getBrightnessAtEyes();
             BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
             boolean bl = !ignoreWater && (entity.isTouchingWaterOrRain() || entity.inPowderSnow || entity.wasInPowderSnow);
-            return f > 0.5F && !bl && entity.getWorld().isSkyVisible(blockPos);
+            return f > 0.5F && !bl && entity.getEntityWorld().isSkyVisible(blockPos);
         }
 
         return false;
@@ -60,7 +60,7 @@ public class Condition {
             };
             case LOW_CEILING -> predicate = ctx -> {
                 BlockPos ceilingPos = ctx.target.getBlockPos().add(0, 2, 0);
-                return ctx.target.getWorld().getBlockState(ceilingPos).isOpaqueFullCube();
+                return ctx.target.getEntityWorld().getBlockState(ceilingPos).isOpaqueFullCube();
             };
             case PHASING -> predicate = ctx -> ctx.target instanceof Phasable phasable && phasable.origins$isPhasing();
             case SNEAKING -> predicate = ctx -> ctx.target.isSneaking();

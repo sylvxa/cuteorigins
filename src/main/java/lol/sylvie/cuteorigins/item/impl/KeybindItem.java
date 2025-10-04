@@ -48,8 +48,7 @@ public class KeybindItem extends SimplePolymerItem {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (!(user instanceof ServerPlayerEntity player)) return super.use(world, user, hand);
-        MinecraftServer server = player.getServer();
-        assert server != null;
+        MinecraftServer server = player.getEntityWorld().getServer();
 
         ItemStack stack = player.getStackInHand(hand);
         Power power = getPower(stack);

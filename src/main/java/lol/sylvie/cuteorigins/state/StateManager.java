@@ -87,11 +87,12 @@ public class StateManager extends PersistentState {
     }
 
     public static PlayerData getPlayerState(LivingEntity player) {
-        if (player.getServer() == null)
+        MinecraftServer server = player.getEntityWorld().getServer();
+        if (server == null)
             throw new IllegalStateException("Tried to get the player state of a non-server entity.");
         if (!(player instanceof PlayerEntity))
             throw new IllegalStateException("Non-player entities shouldn't have data!");
-        StateManager serverState = getServerState(player.getServer());
+        StateManager serverState = getServerState(server);
         return serverState.players.computeIfAbsent(player.getUuid(), uuid -> new PlayerData());
     }
 }

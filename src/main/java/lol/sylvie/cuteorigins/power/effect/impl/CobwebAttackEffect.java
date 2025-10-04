@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
@@ -30,11 +31,13 @@ public class CobwebAttackEffect extends Effect {
 
     @Override
     public ActionResult onAttack(PlayerEntity player, Entity target) {
-        int now = player.getServer().getTicks();
+        MinecraftServer server = player.getEntityWorld().getServer();
+        if (server == null) return super.onAttack(player, target);
+        int now = server.getTicks();
         int lastCobweb = timestamps.computeIfAbsent(player.getUuid(), ignored -> now - COOLDOWN);
 
         if (target.getBlockStateAtPos().isReplaceable() && player.getAttackCooldownProgress(0) == 1f && (lastCobweb + COOLDOWN) <= now) {
-            target.getWorld().setBlockState(target.getBlockPos(), Blocks.COBWEB.getDefaultState());
+            target.getEntityWorld().setBlockState(target.getBlockPos(), Blocks.COBWEB.getDefaultState());
             timestamps.put(player.getUuid(), now);
         }
         return super.onAttack(player, target);

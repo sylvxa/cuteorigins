@@ -13,9 +13,11 @@ import net.minecraft.server.network.SpawnLocating;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +31,7 @@ public class NetherHomeEffect extends Effect {
 
     @Override
     public void onChosen(ServerPlayerEntity player) {
-        World world = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
+        World world = Objects.requireNonNull(player.getEntityWorld().getServer()).getWorld(World.NETHER);
         if (!(world instanceof ServerWorld serverWorld)) return;
         BlockPos pos = SpawnLocating.findServerSpawnPoint(serverWorld, serverWorld.getChunk(player.getBlockPos()).getPos());
         if (pos == null) pos = new BlockPos(0, 64, 0);
@@ -41,13 +43,13 @@ public class NetherHomeEffect extends Effect {
         }
 
         player.teleport(serverWorld, pos.getX(), pos.getY(), pos.getZ(), Set.of(), 0f, 0f, false);
-        player.setSpawnPoint(new ServerPlayerEntity.Respawn(serverWorld.getRegistryKey(), pos, 0f, true), false);
+        player.setSpawnPoint(new ServerPlayerEntity.Respawn(new WorldProperties.SpawnPoint(GlobalPos.create(serverWorld.getRegistryKey(), pos), 0f, 0f), true), false);
     }
 
     @Override
     public void onRemoved(ServerPlayerEntity player) {
         ServerPlayerEntity.Respawn respawn = player.getRespawn();
-        if (respawn != null && respawn.forced() && respawn.dimension().equals(World.NETHER)) {
+        if (respawn != null && respawn.forced() && respawn.respawnData().getDimension().equals(World.NETHER)) {
             player.setSpawnPoint(null, false);
         }
     }

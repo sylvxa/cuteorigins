@@ -70,8 +70,7 @@ public class Power {
     }
 
     public int getCooldownRemaining(ServerPlayerEntity player) {
-        MinecraftServer server = player.getServer();
-        if (server == null) return 0;
+        MinecraftServer server = player.getEntityWorld().getServer();
         return (cooldownMap.getOrDefault(player.getUuid(), 0) + cooldown) - server.getTicks();
     }
 
@@ -81,8 +80,7 @@ public class Power {
     }
 
     public boolean attemptAction(ServerPlayerEntity player) {
-        MinecraftServer server = player.getServer();
-        assert server != null;
+        MinecraftServer server = player.getEntityWorld().getServer();
 
         if (!effect.hasAction()) return false; // This shouldn't happen unless someone does some weird item component stuff!
         if (isOnCooldown(player)) {

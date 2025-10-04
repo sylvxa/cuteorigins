@@ -37,8 +37,8 @@ public class ForceElytraEffect extends Effect {
 
     @Override
     public void onRemoved(ServerPlayerEntity player) {
-        ItemStack slot = player.getInventory().getStack(103);
-        if (slot.isOf(Items.ELYTRA)) player.getInventory().setStack(103, ItemStack.EMPTY);
+        ItemStack slot = player.getEquippedStack(EquipmentSlot.CHEST);
+        if (slot.isOf(Items.ELYTRA)) slot.setCount(0);
     }
 
     public static Effect fromJson(JsonObject object) {
