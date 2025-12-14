@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public class CannotSeeEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("cannot_see");

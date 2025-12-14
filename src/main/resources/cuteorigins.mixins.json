@@ -4,13 +4,13 @@
   "package": "lol.sylvie.cuteorigins.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CreeperEntityMixin",
+    "CreeperMixin",
     "EntityMixin",
-    "HungerManagerMixin",
+    "FoodDataMixin",
     "LivingEntityMixin",
-    "PlayerEntityMixin",
+    "PlayerMixin",
     "ScreenHandlerMixin",
-    "ServerPlayerEntityMixin",
+    "ServerPlayerMixin",
     "SlotMixin",
     "VillagerEntityMixin"
   ],

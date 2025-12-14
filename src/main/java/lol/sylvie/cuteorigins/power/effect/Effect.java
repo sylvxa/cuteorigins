@@ -1,11 +1,11 @@
 package lol.sylvie.cuteorigins.power.effect;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public abstract class Effect {
     private final Identifier identifier;
@@ -24,20 +24,20 @@ public abstract class Effect {
         throw new IllegalAccessException("Do not call Effect::fromJson, call a subclasses fromJson. (you probably forgot to specify one!)");
     }
 
-    public void onRespawn(ServerPlayerEntity player) {}
-    public void onTick(ServerPlayerEntity player) {}
-    public ActionResult onAttack(PlayerEntity player, Entity target) {
-        return ActionResult.PASS;
+    public void onRespawn(ServerPlayer player) {}
+    public void onTick(ServerPlayer player) {}
+    public InteractionResult onAttack(Player player, Entity target) {
+        return InteractionResult.PASS;
     }
 
     public boolean hasAction() {
         return hasAction;
     }
 
-    public void onAction(ServerPlayerEntity player) {
+    public void onAction(ServerPlayer player) {
         if (!hasAction) throw new RuntimeException("Attempted to use action when power type has no action.");
     }
 
-    public void onChosen(ServerPlayerEntity player) {}
-    public void onRemoved(ServerPlayerEntity player) {}
+    public void onChosen(ServerPlayer player) {}
+    public void onRemoved(ServerPlayer player) {}
 }

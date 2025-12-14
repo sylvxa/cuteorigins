@@ -1,10 +1,11 @@
 package lol.sylvie.cuteorigins.origin;
 
-import net.minecraft.util.Identifier;
-
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 
 public class OriginRegistry {
     public HashMap<Identifier, Origin> origins = new HashMap<>();

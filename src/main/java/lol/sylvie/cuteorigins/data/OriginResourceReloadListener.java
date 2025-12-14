@@ -7,21 +7,21 @@ import lol.sylvie.cuteorigins.power.Power;
 import lol.sylvie.cuteorigins.util.JsonHelper;
 import lol.sylvie.cuteorigins.util.OriginRegistries;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 public class OriginResourceReloadListener implements SimpleSynchronousResourceReloadListener {
     @Override
     public Identifier getFabricId() {
-        return Identifier.of(CuteOrigins.MOD_ID, "origin_data");
+        return Identifier.fromNamespaceAndPath(CuteOrigins.MOD_ID, "origin_data");
     }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         CuteOrigins.LOGGER.info("Loading resources...");
 
         OriginRegistries.POWER_REGISTRY.clearRegistry();
-        manager.findResources("power", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
+        manager.listResources("power", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             Identifier identifier = identifierFromPath(id);
             JsonObject object = JsonHelper.readResource(resourceRef);
             Power power = Power.fromJson(identifier, object);
@@ -29,7 +29,7 @@ public class OriginResourceReloadListener implements SimpleSynchronousResourceRe
         });
 
         OriginRegistries.ORIGIN_REGISTRY.clearRegistry();
-        manager.findResources("origin", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
+        manager.listResources("origin", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             Identifier identifier = identifierFromPath(id);
             JsonObject object = JsonHelper.readResource(resourceRef);
             Origin origin = Origin.fromJson(identifier, object);
@@ -40,6 +40,6 @@ public class OriginResourceReloadListener implements SimpleSynchronousResourceRe
 
     private Identifier identifierFromPath(Identifier identifier) {
         String path = identifier.getPath();
-        return Identifier.of(identifier.getNamespace(), (path.substring(path.lastIndexOf("/") + 1)).replace(".json", ""));
+        return Identifier.fromNamespaceAndPath(identifier.getNamespace(), (path.substring(path.lastIndexOf("/") + 1)).replace(".json", ""));
     }
 }

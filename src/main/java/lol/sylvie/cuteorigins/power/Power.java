@@ -4,11 +4,10 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.OriginRegistries;
 import lol.sylvie.cuteorigins.util.TextUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.server.level.ServerPlayer;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.UUID;
@@ -35,7 +34,7 @@ public class Power {
     public static Power fromJson(Identifier identifier, JsonObject object) {
         boolean visible = object.get("visible").getAsBoolean();
         boolean negative = object.get("negative").getAsBoolean();
-        Identifier effect = Identifier.of(object.get("effect").getAsString());
+        Identifier effect = Identifier.parse(object.get("effect").getAsString());
 
         Integer cooldown = null;
         if (object.has("cooldown")) {
@@ -69,36 +68,36 @@ public class Power {
         return this.cooldown != null;
     }
 
-    public int getCooldownRemaining(ServerPlayerEntity player) {
-        MinecraftServer server = player.getEntityWorld().getServer();
-        return (cooldownMap.getOrDefault(player.getUuid(), 0) + cooldown) - server.getTicks();
+    public int getCooldownRemaining(ServerPlayer player) {
+        MinecraftServer server = player.level().getServer();
+        return (cooldownMap.getOrDefault(player.getUUID(), 0) + cooldown) - server.getTickCount();
     }
 
-    public boolean isOnCooldown(ServerPlayerEntity player) {
+    public boolean isOnCooldown(ServerPlayer player) {
         if (cooldown == null) return false;
         return getCooldownRemaining(player) > 0;
     }
 
-    public boolean attemptAction(ServerPlayerEntity player) {
-        MinecraftServer server = player.getEntityWorld().getServer();
+    public boolean attemptAction(ServerPlayer player) {
+        MinecraftServer server = player.level().getServer();
 
         if (!effect.hasAction()) return false; // This shouldn't happen unless someone does some weird item component stuff!
         if (isOnCooldown(player)) {
             float remaining = getCooldownRemaining(player) / 20f;
-            player.sendMessage(Text.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)), true);
+            player.displayClientMessage(Component.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)), true);
             return false;
         }
 
         this.getEffect().onAction(player);
-        cooldownMap.put(player.getUuid(), server.getTicks());
+        cooldownMap.put(player.getUUID(), server.getTickCount());
         return true;
     }
 
-    public Text getName() {
+    public Component getName() {
         return TextUtil.getIdentifierText(this.identifier, "power", "name");
     }
 
-    public Text getDescription() {
+    public Component getDescription() {
         return TextUtil.getIdentifierText(this.identifier, "power", "description");
     }
 

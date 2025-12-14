@@ -5,14 +5,15 @@ import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.power.effect.impl.DebugEffect;
 import lol.sylvie.cuteorigins.state.StateManager;
-import net.minecraft.block.EnderChestBlock;
-import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
 public class ShulkerInventoryEffect extends Effect {
@@ -22,16 +23,16 @@ public class ShulkerInventoryEffect extends Effect {
     }
 
     @Override
-    public void onAction(ServerPlayerEntity player) {
-        player.openHandledScreen(new NamedScreenHandlerFactory() {
+    public void onAction(ServerPlayer player) {
+        player.openMenu(new MenuProvider() {
             @Override
-            public Text getDisplayName() {
-                return Text.translatable("menu.cuteorigins.shulker_inventory");
+            public Component getDisplayName() {
+                return Component.translatable("menu.cuteorigins.shulker_inventory");
             }
 
             @Override
-            public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_3X3, syncId, playerInventory, StateManager.getPlayerState(player).getShulkerInventory(), 1);
+            public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+                return new ChestMenu(MenuType.GENERIC_3x3, syncId, playerInventory, StateManager.getPlayerState(player).getShulkerInventory(), 1);
             }
         });
     }

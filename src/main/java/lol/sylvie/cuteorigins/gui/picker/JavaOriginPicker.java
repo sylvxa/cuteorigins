@@ -9,14 +9,13 @@ import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.power.Power;
 import lol.sylvie.cuteorigins.state.StateManager;
 import lol.sylvie.cuteorigins.util.OriginRegistries;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Rarity;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -25,8 +24,8 @@ public class JavaOriginPicker extends SimpleGui {
     private final List<Origin> origins;
     private int index = 0;
 
-    public JavaOriginPicker(ServerPlayerEntity player) {
-        super(ScreenHandlerType.GENERIC_9X6, player, false);
+    public JavaOriginPicker(ServerPlayer player) {
+        super(MenuType.GENERIC_9x6, player, false);
         this.origins = OriginRegistries.ORIGIN_REGISTRY.getOriginsAlphabetically();
         // Start on the "human" page
         index = IntStream.range(0, origins.size())
@@ -40,14 +39,14 @@ public class JavaOriginPicker extends SimpleGui {
         return false;
     }
 
-    public static void open(ServerPlayerEntity player) {
+    public static void open(ServerPlayer player) {
         JavaOriginPicker gui = new JavaOriginPicker(player);
         gui.open();
         gui.updateGui();
     }
 
     protected void updateGui() {
-        this.setTitle(Text.translatable("menu.cuteorigins.picker"));
+        this.setTitle(Component.translatable("menu.cuteorigins.picker"));
 
         // Setup
         for (int i = 0; i < SLOT_COUNT; i++) {
@@ -55,7 +54,7 @@ public class JavaOriginPicker extends SimpleGui {
         }
 
         // Border
-        ItemStack borderStack = Items.MAGENTA_STAINED_GLASS_PANE.getDefaultStack();
+        ItemStack borderStack = Items.MAGENTA_STAINED_GLASS_PANE.getDefaultInstance();
         for (int i = 0; i < 9; i++) {
             this.setSlot(i, borderStack);
             this.setSlot(i + (9 * 5), borderStack);
@@ -68,8 +67,8 @@ public class JavaOriginPicker extends SimpleGui {
 
         Origin origin = origins.get(index);
         GuiElement originIcon = new GuiElementBuilder(origin.icon())
-                .setName(origin.getName().copy().formatted(Formatting.BOLD, Formatting.WHITE))
-                .setLore(List.of(origin.getDescription().copy().formatted(Formatting.GRAY)))
+                .setName(origin.getName().copy().withStyle(ChatFormatting.BOLD, ChatFormatting.WHITE))
+                .setLore(List.of(origin.getDescription().copy().withStyle(ChatFormatting.GRAY)))
                 .build();
 
         this.setSlot(13, originIcon);
@@ -77,7 +76,7 @@ public class JavaOriginPicker extends SimpleGui {
         // Pagination
         this.setSlot(45, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.ARROW_LEFT)
-                .setName(Text.translatable("menu.cuteorigins.back").copy().formatted(Formatting.BOLD))
+                .setName(Component.translatable("menu.cuteorigins.back").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
                 .setCallback((i, clickType, slotActionType) -> {
                     index--;
@@ -87,7 +86,7 @@ public class JavaOriginPicker extends SimpleGui {
 
         this.setSlot(53, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.ARROW_RIGHT)
-                .setName(Text.translatable("menu.cuteorigins.next").copy().formatted(Formatting.BOLD))
+                .setName(Component.translatable("menu.cuteorigins.next").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
                 .setCallback((i, clickType, slotActionType) -> {
                     index++;
@@ -97,21 +96,21 @@ public class JavaOriginPicker extends SimpleGui {
 
         this.setSlot(49, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.CHECKMARK)
-                .setName(Text.translatable("menu.cuteorigins.choose").copy().formatted(Formatting.BOLD))
+                .setName(Component.translatable("menu.cuteorigins.choose").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
-                .setLore(List.of(Text.translatable("menu.cuteorigins.beware").copy().formatted(Formatting.RED)))
+                .setLore(List.of(Component.translatable("menu.cuteorigins.beware").copy().withStyle(ChatFormatting.RED)))
                 .setCallback((i, clickType, slotActionType) -> {
                     this.close();
                     StateManager.getPlayerState(player)
                             .setOrigin(player, origin);
-                    player.sendMessage(Text.translatable("menu.cuteorigins.success", origin.getName()), true);
+                    player.displayClientMessage(Component.translatable("menu.cuteorigins.success", origin.getName()), true);
                 }));
 
         int i = 19;
         for (Power power : origin.getDisplayPowers()) {
             GuiElement powerIcon = new GuiElementBuilder(Items.PAPER)
-                    .setName(power.isNegative() ? power.getName().copy().formatted(Formatting.RED) : power.getName())
-                    .setLore(List.of(power.getDescription().copy().formatted(Formatting.GRAY)))
+                    .setName(power.isNegative() ? power.getName().copy().withStyle(ChatFormatting.RED) : power.getName())
+                    .setLore(List.of(power.getDescription().copy().withStyle(ChatFormatting.GRAY)))
                     .build();
             this.setSlot(i, powerIcon);
 

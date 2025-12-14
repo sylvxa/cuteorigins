@@ -3,19 +3,12 @@ package lol.sylvie.cuteorigins.power.effect.impl;
 import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -30,15 +23,15 @@ public class CobwebAttackEffect extends Effect {
     }
 
     @Override
-    public ActionResult onAttack(PlayerEntity player, Entity target) {
-        MinecraftServer server = player.getEntityWorld().getServer();
+    public InteractionResult onAttack(Player player, Entity target) {
+        MinecraftServer server = player.level().getServer();
         if (server == null) return super.onAttack(player, target);
-        int now = server.getTicks();
-        int lastCobweb = timestamps.computeIfAbsent(player.getUuid(), ignored -> now - COOLDOWN);
+        int now = server.getTickCount();
+        int lastCobweb = timestamps.computeIfAbsent(player.getUUID(), ignored -> now - COOLDOWN);
 
-        if (target.getBlockStateAtPos().isReplaceable() && player.getAttackCooldownProgress(0) == 1f && (lastCobweb + COOLDOWN) <= now) {
-            target.getEntityWorld().setBlockState(target.getBlockPos(), Blocks.COBWEB.getDefaultState());
-            timestamps.put(player.getUuid(), now);
+        if (target.getInBlockState().canBeReplaced() && player.getAttackStrengthScale(0) == 1f && (lastCobweb + COOLDOWN) <= now) {
+            target.level().setBlockAndUpdate(target.blockPosition(), Blocks.COBWEB.defaultBlockState());
+            timestamps.put(player.getUUID(), now);
         }
         return super.onAttack(player, target);
     }

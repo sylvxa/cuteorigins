@@ -5,16 +5,14 @@ import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -38,18 +36,18 @@ public class DamageEffect extends Effect {
     }
 
     @Override
-    public void onTick(ServerPlayerEntity player) {
+    public void onTick(ServerPlayer player) {
         if (!condition.test(player)) return;
-        ServerWorld world = player.getEntityWorld();
+        ServerLevel world = player.level();
         MinecraftServer server = world.getServer();
 
-        int now = server.getTicks();
-        int lastTickDamage = timestamps.computeIfAbsent(player.getUuid(), ignored -> now);
+        int now = server.getTickCount();
+        int lastTickDamage = timestamps.computeIfAbsent(player.getUUID(), ignored -> now);
         if ((lastTickDamage + speed) < now) {
-            RegistryKey<DamageType> damageTypeKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, damageType);
-            DamageSource source = world.getDamageSources().create(damageTypeKey);
-            player.damage(world, source, damage);
-            timestamps.put(player.getUuid(), now);
+            ResourceKey<DamageType> damageTypeKey = ResourceKey.create(Registries.DAMAGE_TYPE, damageType);
+            DamageSource source = world.damageSources().source(damageTypeKey);
+            player.hurtServer(world, source, damage);
+            timestamps.put(player.getUUID(), now);
         }
     }
 

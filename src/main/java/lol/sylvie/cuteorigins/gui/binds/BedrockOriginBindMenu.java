@@ -4,7 +4,7 @@ import lol.sylvie.cuteorigins.item.impl.KeybindItem;
 import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.power.Power;
 import lol.sylvie.cuteorigins.state.StateManager;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.GeyserApi;
 import org.geysermc.geyser.api.connection.GeyserConnection;
@@ -12,7 +12,7 @@ import org.geysermc.geyser.api.connection.GeyserConnection;
 import java.util.List;
 
 public class BedrockOriginBindMenu {
-    protected static SimpleForm getOriginBindMenu(ServerPlayerEntity player) {
+    protected static SimpleForm getOriginBindMenu(ServerPlayer player) {
         SimpleForm.Builder builder = SimpleForm.builder().title("Grab Keybinds");
 
         Origin origin = StateManager.getPlayerState(player).getOrigin();
@@ -28,14 +28,14 @@ public class BedrockOriginBindMenu {
         builder.validResultHandler(response -> {
             int selectedIndex = response.clickedButtonId();
             Power selectedPower = powers.get(selectedIndex);
-            player.giveItemStack(KeybindItem.getKeybind(selectedPower.getIdentifier()));
+            player.addItem(KeybindItem.getKeybind(selectedPower.getIdentifier()));
         });
 
         return builder.build();
     }
 
-    public static boolean openForBedrockPlayers(ServerPlayerEntity player) {
-        GeyserConnection connection = GeyserApi.api().connectionByUuid(player.getUuid());
+    public static boolean openForBedrockPlayers(ServerPlayer player) {
+        GeyserConnection connection = GeyserApi.api().connectionByUuid(player.getUUID());
         if (connection == null) return false;
 
         SimpleForm gui = getOriginBindMenu(player);

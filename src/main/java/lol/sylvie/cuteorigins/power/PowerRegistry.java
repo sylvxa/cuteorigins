@@ -1,8 +1,8 @@
 package lol.sylvie.cuteorigins.power;
 
-import net.minecraft.util.Identifier;
-
 import java.util.HashMap;
+
+import net.minecraft.resources.Identifier;
 
 public class PowerRegistry {
     public HashMap<Identifier, Power> powers = new HashMap<>();

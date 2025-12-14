@@ -5,14 +5,13 @@ import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,30 +32,30 @@ public class PotionEffect extends Effect {
         this.condition = condition;
     }
 
-    private RegistryEntry<StatusEffect> getStatusEffect(ServerPlayerEntity player) {
-        Registry<StatusEffect> statusEffects = player.getRegistryManager().getOrThrow(RegistryKeys.STATUS_EFFECT);
-        return statusEffects.getEntry(effect).orElseThrow();
+    private Holder<MobEffect> getStatusEffect(ServerPlayer player) {
+        Registry<MobEffect> statusEffects = player.registryAccess().lookupOrThrow(Registries.MOB_EFFECT);
+        return statusEffects.get(effect).orElseThrow();
     }
 
     @Override
-    public void onTick(ServerPlayerEntity player) {
-        RegistryEntry<StatusEffect> statusEffect = getStatusEffect(player);
-        boolean hasEffect = player.hasStatusEffect(statusEffect);
+    public void onTick(ServerPlayer player) {
+        Holder<MobEffect> statusEffect = getStatusEffect(player);
+        boolean hasEffect = player.hasEffect(statusEffect);
         boolean conditionResult = condition.test(player);
-        UUID playerUuid = player.getUuid();
+        UUID playerUuid = player.getUUID();
         if (conditionResult) {
-            if (!hasEffect) player.addStatusEffect(new StatusEffectInstance(statusEffect, StatusEffectInstance.INFINITE, potency, false, false, false));
+            if (!hasEffect) player.addEffect(new MobEffectInstance(statusEffect, MobEffectInstance.INFINITE_DURATION, potency, false, false, false));
         } else {
-            if (hasEffect && conditionLastTick.getOrDefault(playerUuid, false)) player.removeStatusEffect(statusEffect);
+            if (hasEffect && conditionLastTick.getOrDefault(playerUuid, false)) player.removeEffect(statusEffect);
         }
         conditionLastTick.put(playerUuid, conditionResult);
     }
 
     @Override
-    public void onRemoved(ServerPlayerEntity player) {
-        RegistryEntry<StatusEffect> statusEffect = getStatusEffect(player);
-        boolean hasEffect = player.hasStatusEffect(statusEffect);
-        if (hasEffect) player.removeStatusEffect(statusEffect);
+    public void onRemoved(ServerPlayer player) {
+        Holder<MobEffect> statusEffect = getStatusEffect(player);
+        boolean hasEffect = player.hasEffect(statusEffect);
+        if (hasEffect) player.removeEffect(statusEffect);
     }
 
     public static Effect fromJson(JsonObject object) {

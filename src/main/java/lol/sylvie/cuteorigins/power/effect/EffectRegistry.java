@@ -3,8 +3,8 @@ package lol.sylvie.cuteorigins.power.effect;
 import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.power.effect.impl.*;
 import lol.sylvie.cuteorigins.power.effect.impl.shulker.ShulkerInventoryEffect;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

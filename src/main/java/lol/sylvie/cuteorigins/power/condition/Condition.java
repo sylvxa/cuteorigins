@@ -3,10 +3,13 @@ package lol.sylvie.cuteorigins.power.condition;
 import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.mixininterfaces.Phasable;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.entity.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Locale;
@@ -20,11 +23,11 @@ public class Condition {
 
     // MobEntity.class
     private boolean isAffectedByDaylight(LivingEntity entity, boolean ignoreWater) {
-        if (entity.getEntityWorld().isDay() && !entity.getEntityWorld().isClient()) {
-            float f = entity.getBrightnessAtEyes();
-            BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
-            boolean bl = !ignoreWater && (entity.isTouchingWaterOrRain() || entity.inPowderSnow || entity.wasInPowderSnow);
-            return f > 0.5F && !bl && entity.getEntityWorld().isSkyVisible(blockPos);
+        if (entity.level().isBrightOutside() && !entity.level().isClientSide()) {
+            float f = entity.getLightLevelDependentMagicValue();
+            BlockPos blockPos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
+            boolean bl = !ignoreWater && (entity.isInWaterOrRain() || entity.isInPowderSnow || entity.wasInPowderSnow);
+            return f > 0.5F && !bl && entity.level().canSeeSky(blockPos);
         }
 
         return false;
@@ -32,38 +35,38 @@ public class Condition {
 
     public Condition(CheckType checkType, JsonObject params, boolean inverted) {
         switch (checkType) {
-            case ENTITY_TYPE -> predicate = ctx -> ctx.target.getType().equals(EntityType.get(params.get("type").getAsString()).orElseThrow());
+            case ENTITY_TYPE -> predicate = ctx -> ctx.target.getType().equals(EntityType.byString(params.get("type").getAsString()).orElseThrow());
             case EQUIPMENT -> {
                 EquipmentSlot slot = EquipmentSlot.byName(params.get("slot").getAsString().toLowerCase(Locale.ROOT));
                 Identifier identifier = JsonHelper.jsonStringToIdentifier(params.get("item"));
                 predicate = ctx -> {
                     if (!(ctx.target instanceof LivingEntity living)) return false;
-                    return living.getEquippedStack(slot).getRegistryEntry().matchesId(identifier);
+                    return living.getItemBySlot(slot).getItemHolder().is(identifier);
                 };
             }
             case WATER -> {
                 boolean submerged = params.has("submerged") && params.get("submerged").getAsBoolean();
                 boolean rain = params.has("rain") && params.get("rain").getAsBoolean();
                 predicate = ctx -> {
-                    if (rain && ctx.target.isTouchingWaterOrRain()) return true;
+                    if (rain && ctx.target.isInWaterOrRain()) return true;
                     if (submerged) {
-                        return ctx.target.isSubmergedInWater();
+                        return ctx.target.isUnderWater();
                     }
 
-                    return ctx.target.isTouchingWater();
+                    return ctx.target.isInWater();
                 };
             }
             case FIRE -> predicate = ctx -> ctx.target.isOnFire();
             case GLIDING -> predicate = ctx -> {
-                if (!(ctx.target instanceof ServerPlayerEntity player)) return false;
-                return player.isGliding();
+                if (!(ctx.target instanceof ServerPlayer player)) return false;
+                return player.isFallFlying();
             };
             case LOW_CEILING -> predicate = ctx -> {
-                BlockPos ceilingPos = ctx.target.getBlockPos().add(0, 2, 0);
-                return ctx.target.getEntityWorld().getBlockState(ceilingPos).isOpaqueFullCube();
+                BlockPos ceilingPos = ctx.target.blockPosition().offset(0, 2, 0);
+                return ctx.target.level().getBlockState(ceilingPos).isSolidRender();
             };
             case PHASING -> predicate = ctx -> ctx.target instanceof Phasable phasable && phasable.origins$isPhasing();
-            case SNEAKING -> predicate = ctx -> ctx.target.isSneaking();
+            case SNEAKING -> predicate = ctx -> ctx.target.isShiftKeyDown();
             case SPRINTING -> predicate = ctx -> ctx.target.isSprinting();
             case ELEVATION -> {
                 int height = params.get("height").getAsInt();
@@ -71,7 +74,7 @@ public class Condition {
             }
             case DAYLIGHT -> {
                 boolean ignoreWater = params.has("ignore_water") && params.get("ignore_water").getAsBoolean();
-                predicate = ctx -> ctx.target instanceof ServerPlayerEntity living && isAffectedByDaylight(living, ignoreWater);
+                predicate = ctx -> ctx.target instanceof ServerPlayer living && isAffectedByDaylight(living, ignoreWater);
             }
             case ALWAYS -> predicate = ctx -> true;
             default -> throw new NotImplementedException("CheckType " + checkType + " is not implemented");

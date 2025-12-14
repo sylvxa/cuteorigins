@@ -5,14 +5,12 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.level.block.Block;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,7 @@ public class ModifyHarvestEffect extends Effect {
     }
 
     private boolean itemInTagList(List<TagKey<Block>> tags, Block block) {
-        return tags.stream().anyMatch(tag -> block.getDefaultState().isIn(tag));
+        return tags.stream().anyMatch(tag -> block.defaultBlockState().is(tag));
     }
 
     public boolean inWhitelist(Block block) {
@@ -46,28 +44,28 @@ public class ModifyHarvestEffect extends Effect {
         return itemInTagList(blacklistedTags, block) || blacklistedItems.contains(block);
     }
 
-    private static Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> loadTagItemList(List<JsonElement> jsonList) {
+    private static Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> loadTagItemList(List<JsonElement> jsonList) {
         ArrayList<Block> items = new ArrayList<>();
         ArrayList<TagKey<Block>> tags = new ArrayList<>();
         for (JsonElement element : jsonList) {
             if (!(element instanceof JsonObject item)) throw new IllegalArgumentException("Item/Tag is not a JSON object (string)");
             Identifier id = JsonHelper.jsonStringToIdentifier(item.get("id"));
             if (item.get("type").getAsString().equalsIgnoreCase("tag")) {
-                tags.add(TagKey.of(RegistryKeys.BLOCK, id));
+                tags.add(TagKey.create(Registries.BLOCK, id));
             } else {
-                items.add(Registries.BLOCK.get(id));
+                items.add(BuiltInRegistries.BLOCK.getValue(id));
             }
         }
-        return new Pair<>(items, tags);
+        return new Tuple<>(items, tags);
     }
 
     public static Effect fromJson(JsonObject object) {
-        Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> whitelist = new Pair<>(new ArrayList<>(), new ArrayList<>());
-        Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> blacklist = new Pair<>(new ArrayList<>(), new ArrayList<>());
+        Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> whitelist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
+        Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> blacklist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
 
         if (object.has("whitelist")) whitelist = loadTagItemList(object.getAsJsonArray("whitelist").asList());
         if (object.has("blacklist")) blacklist = loadTagItemList(object.getAsJsonArray("blacklist").asList());
 
-        return new ModifyHarvestEffect(whitelist.getLeft(), whitelist.getRight(), blacklist.getLeft(), blacklist.getRight());
+        return new ModifyHarvestEffect(whitelist.getA(), whitelist.getB(), blacklist.getA(), blacklist.getB());
     }
 }

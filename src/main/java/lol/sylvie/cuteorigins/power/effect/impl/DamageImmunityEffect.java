@@ -6,15 +6,11 @@ import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.player.Player;
 import java.util.List;
 
 public class DamageImmunityEffect extends Effect {
@@ -28,12 +24,12 @@ public class DamageImmunityEffect extends Effect {
         this.condition = condition;
     }
 
-    public DamageType getDamageType(PlayerEntity player, Identifier identifier) {
-        Registry<DamageType> damageTypeRegistry = player.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE);
-        return damageTypeRegistry.get(identifier);
+    public DamageType getDamageType(Player player, Identifier identifier) {
+        Registry<DamageType> damageTypeRegistry = player.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
+        return damageTypeRegistry.getValue(identifier);
     }
 
-    public boolean isImmuneTo(PlayerEntity player, DamageType type) {
+    public boolean isImmuneTo(Player player, DamageType type) {
         return damageTypes.stream().anyMatch(identifier -> getDamageType(player, identifier).equals(type)) && this.condition.test(player);
     }
 

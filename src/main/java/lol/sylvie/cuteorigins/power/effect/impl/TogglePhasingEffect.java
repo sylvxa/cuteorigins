@@ -4,10 +4,9 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.mixininterfaces.Phasable;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 
 public class TogglePhasingEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("toggle_phasing");
@@ -17,10 +16,10 @@ public class TogglePhasingEffect extends Effect {
     }
 
     @Override
-    public void onAction(ServerPlayerEntity player) {
+    public void onAction(ServerPlayer player) {
         Phasable phasable = player;
         if (!phasable.origins$canPhase()) {
-            player.sendMessage(Text.translatable("message.cuteorigins.cannot_phase"), true);
+            player.displayClientMessage(Component.translatable("message.cuteorigins.cannot_phase"), true);
             return;
         }
 
@@ -28,8 +27,8 @@ public class TogglePhasingEffect extends Effect {
         phasable.origins$setAndSyncPhasing(phasing);
 
         if (phasing) {
-            player.addVelocity(0d, -0.1d, 0d);
-            player.velocityModified = true;
+            player.push(0d, -0.1d, 0d);
+            player.hurtMarked = true;
         }
     }
 

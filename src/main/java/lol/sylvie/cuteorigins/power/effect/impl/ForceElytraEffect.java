@@ -3,18 +3,17 @@ package lol.sylvie.cuteorigins.power.effect.impl;
 import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.command.ItemCommand;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public class ForceElytraEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("force_elytra");
@@ -24,21 +23,21 @@ public class ForceElytraEffect extends Effect {
     }
 
     @Override
-    public void onTick(ServerPlayerEntity player) {
-        if (!player.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA)) {
-            ItemStack elytra = Items.ELYTRA.getDefaultStack();
-            Registry<Enchantment> enchantmentRegistry = player.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
-            elytra.addEnchantment(enchantmentRegistry.getEntry(Enchantments.BINDING_CURSE.getValue()).orElseThrow(), 1);
-            elytra.addEnchantment(enchantmentRegistry.getEntry(Enchantments.VANISHING_CURSE.getValue()).orElseThrow(), 1);
-            elytra.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
-            player.equipStack(EquipmentSlot.CHEST, elytra);
+    public void onTick(ServerPlayer player) {
+        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)) {
+            ItemStack elytra = Items.ELYTRA.getDefaultInstance();
+            Registry<Enchantment> enchantmentRegistry = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            elytra.enchant(enchantmentRegistry.get(Enchantments.BINDING_CURSE.identifier()).orElseThrow(), 1);
+            elytra.enchant(enchantmentRegistry.get(Enchantments.VANISHING_CURSE.identifier()).orElseThrow(), 1);
+            elytra.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
+            player.setItemSlot(EquipmentSlot.CHEST, elytra);
         }
     }
 
     @Override
-    public void onRemoved(ServerPlayerEntity player) {
-        ItemStack slot = player.getEquippedStack(EquipmentSlot.CHEST);
-        if (slot.isOf(Items.ELYTRA)) slot.setCount(0);
+    public void onRemoved(ServerPlayer player) {
+        ItemStack slot = player.getItemBySlot(EquipmentSlot.CHEST);
+        if (slot.is(Items.ELYTRA)) slot.setCount(0);
     }
 
     public static Effect fromJson(JsonObject object) {

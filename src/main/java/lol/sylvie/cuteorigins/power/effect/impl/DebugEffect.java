@@ -3,12 +3,12 @@ package lol.sylvie.cuteorigins.power.effect.impl;
 import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class DebugEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("debug");
@@ -17,33 +17,33 @@ public class DebugEffect extends Effect {
     }
 
     @Override
-    public void onRespawn(ServerPlayerEntity player) {
-        player.sendMessage(Text.literal("Respawn event"));
+    public void onRespawn(ServerPlayer player) {
+        player.sendSystemMessage(Component.literal("Respawn event"));
     }
 
     @Override
-    public ActionResult onAttack(PlayerEntity player, Entity target) {
-        player.sendMessage(Text.literal("Attack event"), false);
-        return ActionResult.PASS;
+    public InteractionResult onAttack(Player player, Entity target) {
+        player.displayClientMessage(Component.literal("Attack event"), false);
+        return InteractionResult.PASS;
     }
 
     @Override
-    public void onChosen(ServerPlayerEntity player) {
-        player.sendMessage(Text.literal("Chosen event"));
+    public void onChosen(ServerPlayer player) {
+        player.sendSystemMessage(Component.literal("Chosen event"));
     }
 
     @Override
-    public void onRemoved(ServerPlayerEntity player) {
-        player.sendMessage(Text.literal("Removed event"));
+    public void onRemoved(ServerPlayer player) {
+        player.sendSystemMessage(Component.literal("Removed event"));
     }
 
     @Override
-    public void onAction(ServerPlayerEntity player) {
-        player.sendMessage(Text.literal("Action event"));
+    public void onAction(ServerPlayer player) {
+        player.sendSystemMessage(Component.literal("Action event"));
     }
 
     @Override
-    public void onTick(ServerPlayerEntity player) {
+    public void onTick(ServerPlayer player) {
         //player.sendMessage(Text.literal("Tick event"));
     }
 

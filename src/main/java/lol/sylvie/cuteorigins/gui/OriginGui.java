@@ -5,7 +5,7 @@ import lol.sylvie.cuteorigins.gui.binds.BedrockOriginBindMenu;
 import lol.sylvie.cuteorigins.gui.binds.JavaOriginBindMenu;
 import lol.sylvie.cuteorigins.gui.picker.BedrockOriginPicker;
 import lol.sylvie.cuteorigins.gui.picker.JavaOriginPicker;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class OriginGui {
     private static boolean isGeyserAvailable = false;
@@ -17,12 +17,12 @@ public class OriginGui {
         } catch (ClassNotFoundException ignored) {}
     }
 
-    public static void openPicker(ServerPlayerEntity player) {
+    public static void openPicker(ServerPlayer player) {
         if (isGeyserAvailable && BedrockOriginPicker.openForBedrockPlayers(player)) return;
         JavaOriginPicker.open(player);
     }
 
-    public static void openBinds(ServerPlayerEntity player) {
+    public static void openBinds(ServerPlayer player) {
         if (isGeyserAvailable && BedrockOriginBindMenu.openForBedrockPlayers(player)) return;
         JavaOriginBindMenu.open(player);
     }

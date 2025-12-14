@@ -5,8 +5,21 @@
 
   "name": "Sylvie's Origins",
   "description": "An unofficial server-side \"port\" of the Origin's mod, built with Bedrock & vanilla support.",
-  "authors": [],
-  "contact": {},
+  "authors": [
+      {
+        "name": "sylvxa",
+        "contact": {
+          "email": "me@sylvie.lol",
+          "homepage": "https://sylvie.lol"
+        }
+      }
+  ],
+  "contact": {
+      "repo": "https://github.com/sylvxa/cuteorigins",
+      "homepage": "https://modrinth.com/mod/cuteorigins",
+      "issues": "https://github.com/sylvxa/cuteorigins/issues",
+      "discord": "https://discord.gg/5qzrB98sBA"
+  },
 
   "license": "MIT",
   "icon": "assets/cuteorigins/icon.png",
@@ -23,7 +36,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": [">=1.21.9"]
+    "minecraft": ">=${minecraft_version}"
   },
 
   "custom": {

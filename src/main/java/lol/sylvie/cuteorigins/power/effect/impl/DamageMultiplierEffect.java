@@ -5,13 +5,12 @@ import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageType;
 
 public class DamageMultiplierEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("damage_multiplier");
@@ -30,9 +29,9 @@ public class DamageMultiplierEffect extends Effect {
         return multiplier;
     }
 
-    public RegistryEntry<DamageType> getDamageType(ServerPlayerEntity player) {
-        Registry<DamageType> damageTypeRegistry = player.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE);
-        return damageTypeRegistry.getEntry(damageType).orElse(null);
+    public Holder<DamageType> getDamageType(ServerPlayer player) {
+        Registry<DamageType> damageTypeRegistry = player.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
+        return damageTypeRegistry.get(damageType).orElse(null);
     }
 
     public Condition getCondition() {

@@ -9,27 +9,26 @@ import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.util.JsonHelper;
 import lol.sylvie.cuteorigins.util.OriginRegistries;
 import lol.sylvie.cuteorigins.util.TextUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
 public record Origin(Identifier identifier, Item icon, List<Power> powers) {
-    public Text getName() {
+    public Component getName() {
         return TextUtil.getIdentifierText(this.identifier, "origin", "name");
     }
 
-    public Text getDescription() {
+    public Component getDescription() {
         return TextUtil.getIdentifierText(this.identifier, "origin", "description");
     }
 
@@ -66,7 +65,7 @@ public record Origin(Identifier identifier, Item icon, List<Power> powers) {
 
     public static Origin fromJson(Identifier identifier, JsonObject object) {
         Identifier itemId = JsonHelper.jsonStringToIdentifier(object.get("icon"));
-        Item item = Registries.ITEM.get(itemId).asItem();
+        Item item = BuiltInRegistries.ITEM.getValue(itemId).asItem();
 
         List<JsonElement> powerNames = object.getAsJsonArray("powers").asList();
         List<Power> powerList = powerNames.stream()
@@ -87,29 +86,29 @@ public record Origin(Identifier identifier, Item icon, List<Power> powers) {
         this.powers.forEach(power -> runnable.accept(power.getEffect()));
     }
 
-    public void onRespawn(ServerPlayerEntity player) {
+    public void onRespawn(ServerPlayer player) {
         forEachEffect(effect -> effect.onRespawn(player));
     }
 
-    public void onTick(ServerPlayerEntity player) {
+    public void onTick(ServerPlayer player) {
         forEachEffect(effect -> effect.onTick(player));
     }
 
-    public ActionResult onAttack(PlayerEntity player, Entity target) {
+    public InteractionResult onAttack(Player player, Entity target) {
         for (Power power : this.powers) {
-            ActionResult thisResult = power.getEffect().onAttack(player, target);
-            if (thisResult != ActionResult.PASS) {
+            InteractionResult thisResult = power.getEffect().onAttack(player, target);
+            if (thisResult != InteractionResult.PASS) {
                 return thisResult;
             }
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    public void onChosen(ServerPlayerEntity player) {
+    public void onChosen(ServerPlayer player) {
         forEachEffect(effect -> effect.onChosen(player));
     }
 
-    public void onRemoved(ServerPlayerEntity player) {
+    public void onRemoved(ServerPlayer player) {
         forEachEffect(effect -> effect.onRemoved(player));
     }
 }

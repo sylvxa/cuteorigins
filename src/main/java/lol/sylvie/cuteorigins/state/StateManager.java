@@ -3,26 +3,25 @@ package lol.sylvie.cuteorigins.state;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lol.sylvie.cuteorigins.CuteOrigins;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Uuids;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.PersistentStateType;
-
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.world.level.storage.DimensionDataStorage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class StateManager extends PersistentState {
+public class StateManager extends SavedData {
     public HashMap<UUID, PlayerData> players;
 
     public static final Codec<StateManager> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.unboundedMap(Uuids.CODEC, PlayerData.CODEC).fieldOf("players").forGetter(StateManager::getPlayers))
+                    Codec.unboundedMap(UUIDUtil.AUTHLIB_CODEC, PlayerData.CODEC).fieldOf("players").forGetter(StateManager::getPlayers))
             .apply(instance, StateManager::new));
 
-    private static final PersistentStateType<StateManager> TYPE = new PersistentStateType<>(CuteOrigins.MOD_ID,
+    private static final SavedDataType<StateManager> TYPE = new SavedDataType<>(CuteOrigins.MOD_ID,
             StateManager::new, CODEC, null);
 
     // Constructors
@@ -78,21 +77,21 @@ public class StateManager extends PersistentState {
     }*/
 
     public static StateManager getServerState(MinecraftServer server) {
-        PersistentStateManager persistentStateManager = server.getOverworld().getPersistentStateManager();
-        StateManager state = persistentStateManager.getOrCreate(TYPE);
+        DimensionDataStorage persistentStateManager = server.overworld().getDataStorage();
+        StateManager state = persistentStateManager.computeIfAbsent(TYPE);
 
-        state.markDirty();
+        state.setDirty();
 
         return state;
     }
 
     public static PlayerData getPlayerState(LivingEntity player) {
-        MinecraftServer server = player.getEntityWorld().getServer();
+        MinecraftServer server = player.level().getServer();
         if (server == null)
             throw new IllegalStateException("Tried to get the player state of a non-server entity.");
-        if (!(player instanceof PlayerEntity))
+        if (!(player instanceof Player))
             throw new IllegalStateException("Non-player entities shouldn't have data!");
         StateManager serverState = getServerState(server);
-        return serverState.players.computeIfAbsent(player.getUuid(), uuid -> new PlayerData());
+        return serverState.players.computeIfAbsent(player.getUUID(), uuid -> new PlayerData());
     }
 }

@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.power.condition.Condition;
 import lol.sylvie.cuteorigins.power.effect.Effect;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 
 public class FireEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("fire");
@@ -18,9 +18,9 @@ public class FireEffect extends Effect {
     }
 
     @Override
-    public void onTick(ServerPlayerEntity player) {
+    public void onTick(ServerPlayer player) {
         if (this.condition.test(player)) {
-            player.setOnFireForTicks(40);
+            player.igniteForTicks(40);
         }
     }
 

@@ -19,20 +19,19 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 
 public class EventRegistry {
-    public static boolean cannotUse(Item item, PlayerEntity user) {
-        if (!(user instanceof ServerPlayerEntity)) return false;
+    public static boolean cannotUse(Item item, Player user) {
+        if (!(user instanceof ServerPlayer)) return false;
         Origin origin = StateManager.getPlayerState(user).getOrigin();
         if (origin == null) return false;
         for (Effect effect : origin.getEffectsOfType(CannotUseEffect.class)) {
@@ -44,7 +43,7 @@ public class EventRegistry {
         return false;
     }
 
-    public static Text canSleep(PlayerEntity player) {
+    public static Component canSleep(Player player) {
         Origin origin = StateManager.getPlayerState(player).getOrigin();
         if (origin == null) return null;
         for (Effect effect : origin.getEffectsOfType(SleepingConditionEffect.class)) {
@@ -63,7 +62,7 @@ public class EventRegistry {
         });
 
         ServerTickEvents.START_WORLD_TICK.register(world -> {
-            world.getPlayers().forEach((player) -> {
+            world.players().forEach((player) -> {
                 Origin origin = StateManager.getPlayerState(player).getOrigin();
                 if (origin != null) origin.onTick(player);
             });
@@ -71,7 +70,7 @@ public class EventRegistry {
             MinecraftServer server = world.getServer();
             ArrayList<ItemStack> buffer = new ArrayList<>();
             KeybindItem.UPDATE_MAP.forEach((stack, timestamp) -> {
-                if (server.getTicks() >= timestamp) {
+                if (server.getTickCount() >= timestamp) {
                     stack.set(ModComponents.ON_COOLDOWN, false);
                     buffer.add(stack);
                 }
@@ -80,38 +79,38 @@ public class EventRegistry {
         });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity instanceof ServerPlayerEntity player) {
+            if (entity instanceof ServerPlayer player) {
                 Origin origin = StateManager.getPlayerState(player).getOrigin();
                 if (origin == null) {
                     OriginGui.openPicker(player);
                 }
             }
 
-            if (entity instanceof ItemEntity item && item.getStack().isOf(ModItems.KEYBIND_ITEM)) {
+            if (entity instanceof ItemEntity item && item.getItem().is(ModItems.KEYBIND_ITEM)) {
                 entity.kill(world);
             }
         });
 
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!(player instanceof ServerPlayerEntity)) return 
-ActionResult.PASS;
+            if (!(player instanceof ServerPlayer)) return 
+InteractionResult.PASS;
             Origin origin = StateManager.getPlayerState(player).getOrigin();
             if (origin != null) return origin.onAttack(player, entity);
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         });
 
         EntitySleepEvents.ALLOW_SLEEPING.register((playerEntity, blockPos) -> {
-            Text message = canSleep(playerEntity);
+            Component message = canSleep(playerEntity);
             if (message != null) {
-                playerEntity.sendMessage(message, true);
-                return PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE;
+                playerEntity.displayClientMessage(message, true);
+                return Player.BedSleepingProblem.OTHER_PROBLEM;
             }
             return null;
         });
 
-        UseItemCallback.EVENT.register((playerEntity, world, hand) -> cannotUse(playerEntity.getStackInHand(hand).getItem(), playerEntity) ? ActionResult.CONSUME : ActionResult.PASS);
-        UseBlockCallback.EVENT.register((playerEntity, world, hand, blockHitResult) -> cannotUse(playerEntity.getStackInHand(hand).getItem(), playerEntity) ? ActionResult.CONSUME : ActionResult.PASS);
-        UseEntityCallback.EVENT.register((playerEntity, world, hand, entity, entityHitResult) -> cannotUse(playerEntity.getStackInHand(hand).getItem(), playerEntity) ? ActionResult.CONSUME : ActionResult.PASS);
+        UseItemCallback.EVENT.register((playerEntity, world, hand) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
+        UseBlockCallback.EVENT.register((playerEntity, world, hand, blockHitResult) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
+        UseEntityCallback.EVENT.register((playerEntity, world, hand, entity, entityHitResult) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
 
         CommandRegistrationCallback.EVENT.register(OriginCommand::register);
     }

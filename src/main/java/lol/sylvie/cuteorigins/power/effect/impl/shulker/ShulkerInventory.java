@@ -1,13 +1,12 @@
 package lol.sylvie.cuteorigins.power.effect.impl.shulker;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-
 import java.util.Arrays;
 import java.util.List;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
 
-public class ShulkerInventory extends SimpleInventory {
+public class ShulkerInventory extends SimpleContainer {
     private static final int SIZE = 9;
 
     // TODO: items lose their position in the inventory upon restart
@@ -17,13 +16,13 @@ public class ShulkerInventory extends SimpleInventory {
                     list -> new ShulkerInventory(
                             list.stream()
                                     .map(stack -> stack == null ? ItemStack.EMPTY : stack)
-                                    .map(stack -> stack.isEmpty() || stack.getItem() == net.minecraft.item.Items.AIR || stack.getCount() <= 0 || stack.getCount() > 99
+                                    .map(stack -> stack.isEmpty() || stack.getItem() == net.minecraft.world.item.Items.AIR || stack.getCount() <= 0 || stack.getCount() > 99
                                             ? ItemStack.EMPTY
                                             : stack)
                                     .toList()
                     ),
-                    inventory -> inventory.heldStacks.stream()
-                            .filter(stack -> !stack.isEmpty() && stack.getCount() > 0 && stack.getCount() <= 99 && stack.getItem() != net.minecraft.item.Items.AIR)
+                    inventory -> inventory.items.stream()
+                            .filter(stack -> !stack.isEmpty() && stack.getCount() > 0 && stack.getCount() <= 99 && stack.getItem() != net.minecraft.world.item.Items.AIR)
                             .toList()
             );
 
@@ -44,7 +43,7 @@ public class ShulkerInventory extends SimpleInventory {
         super(defaultedItems(
                 items.stream()
                         .map(stack -> stack == null ? ItemStack.EMPTY : stack)
-                        .map(stack -> stack.isEmpty() || stack.getItem() == net.minecraft.item.Items.AIR || stack.getCount() <= 0 || stack.getCount() > 99
+                        .map(stack -> stack.isEmpty() || stack.getItem() == net.minecraft.world.item.Items.AIR || stack.getCount() <= 0 || stack.getCount() > 99
                                 ? ItemStack.EMPTY
                                 : stack)
                         .toList()
