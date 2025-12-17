@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Random;
@@ -21,7 +22,7 @@ public class Condition {
     private final boolean inverted;
     private static final Random random = new Random();
 
-    // MobEntity.class
+    // Mob.class
     private boolean isAffectedByDaylight(LivingEntity entity, boolean ignoreWater) {
         if (entity.level().isBrightOutside() && !entity.level().isClientSide()) {
             float f = entity.getLightLevelDependentMagicValue();

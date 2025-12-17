@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -104,7 +105,10 @@ public class PlayerMixin {
         for (Effect effect : origin.getEffectsOfType(DamageMultiplierEffect.class)) {
             DamageMultiplierEffect multiplierEffect = (DamageMultiplierEffect) effect;
             ResourceKey<DamageType> damageType = multiplierEffect.getDamageType(player).unwrapKey().orElse(null);
-            if ((damageType == null || source.is(damageType)) && multiplierEffect.getCondition().test(player)) {
+            boolean isAttacker = multiplierEffect.isAttacker();
+            Entity attacker = source.getEntity();
+            if (isAttacker && attacker == null) continue;
+            if ((damageType == null || source.is(damageType)) && multiplierEffect.getCondition().test(isAttacker ? attacker : player)) {
                 value *= multiplierEffect.getMultiplier();
             }
         }

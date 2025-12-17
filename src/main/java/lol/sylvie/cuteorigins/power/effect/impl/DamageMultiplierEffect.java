@@ -11,18 +11,22 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
 public class DamageMultiplierEffect extends Effect {
     public static final Identifier IDENTIFIER = CuteOrigins.identifier("damage_multiplier");
     private final float multiplier;
     private final Identifier damageType;
     private final Condition condition;
+    private final boolean attacker;
 
-    public DamageMultiplierEffect(float multiplier, Identifier damageType, Condition condition) {
+    public DamageMultiplierEffect(float multiplier, Identifier damageType, Condition condition, boolean attacker) {
         super(IDENTIFIER, false);
         this.multiplier = multiplier;
         this.damageType = damageType;
         this.condition = condition;
+        this.attacker = attacker;
     }
 
     public float getMultiplier() {
@@ -38,7 +42,15 @@ public class DamageMultiplierEffect extends Effect {
         return condition;
     }
 
+    public boolean isAttacker() {
+        return attacker;
+    }
+
     public static Effect fromJson(JsonObject object) {
-        return new DamageMultiplierEffect(object.get("multiplier").getAsFloat(), JsonHelper.jsonStringToIdentifier(object.get("damage_type")), Condition.fromJson(object.getAsJsonObject("condition")));
+        return new DamageMultiplierEffect(
+                object.get("multiplier").getAsFloat(),
+                JsonHelper.jsonStringToIdentifier(object.get("damage_type")),
+                Condition.fromJson(object.getAsJsonObject("condition")),
+                object.has("attacker") && object.get("attacker").getAsBoolean());
     }
 }
