@@ -31,7 +31,7 @@ public class BedrockOriginPicker {
     }
 
     protected static SimpleForm getOriginListGui(ServerPlayer player, GeyserConnection connection) {
-        List<Origin> origins = OriginRegistries.ORIGIN_REGISTRY.getOriginsAlphabetically();
+        List<Origin> origins = OriginRegistries.ORIGIN_REGISTRY.getDisplayOrigins();
         SimpleForm.Builder builder = SimpleForm.builder().title("Select an Origin");
 
         for (Origin origin : origins) {

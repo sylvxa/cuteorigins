@@ -26,7 +26,7 @@ public class JavaOriginPicker extends SimpleGui {
 
     public JavaOriginPicker(ServerPlayer player) {
         super(MenuType.GENERIC_9x6, player, false);
-        this.origins = OriginRegistries.ORIGIN_REGISTRY.getOriginsAlphabetically();
+        this.origins = OriginRegistries.ORIGIN_REGISTRY.getDisplayOrigins();
         // Start on the "human" page
         index = IntStream.range(0, origins.size())
                 .filter(i -> origins.get(i).identifier().equals(CuteOrigins.identifier("human")))

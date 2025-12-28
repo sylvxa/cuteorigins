@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record Origin(Identifier identifier, Item icon, List<Power> powers) {
+public record Origin(Identifier identifier, Item icon, boolean hidden, List<Power> powers) {
     public Component getName() {
         return TextUtil.getIdentifierText(this.identifier, "origin", "name");
     }
@@ -66,6 +66,7 @@ public record Origin(Identifier identifier, Item icon, List<Power> powers) {
     public static Origin fromJson(Identifier identifier, JsonObject object) {
         Identifier itemId = JsonHelper.jsonStringToIdentifier(object.get("icon"));
         Item item = BuiltInRegistries.ITEM.getValue(itemId).asItem();
+        boolean hidden = object.has("hidden") && object.get("hidden").getAsBoolean();
 
         List<JsonElement> powerNames = object.getAsJsonArray("powers").asList();
         List<Power> powerList = powerNames.stream()
@@ -79,7 +80,7 @@ public record Origin(Identifier identifier, Item icon, List<Power> powers) {
                 })
                 .map(OriginRegistries.POWER_REGISTRY::getPower).toList();
 
-        return new Origin(identifier, item, powerList);
+        return new Origin(identifier, item, hidden, powerList);
     }
 
     private void forEachEffect(Consumer<Effect> runnable) {

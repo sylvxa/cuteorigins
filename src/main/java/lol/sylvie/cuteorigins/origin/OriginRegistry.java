@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.Identifier;
 
 public class OriginRegistry {
     public HashMap<Identifier, Origin> origins = new HashMap<>();
@@ -22,8 +21,11 @@ public class OriginRegistry {
         return origins.values().stream().toList();
     }
 
-    public List<Origin> getOriginsAlphabetically() {
-        return getOrigins().stream().sorted(Comparator.comparing(o -> o.getName().getString())).toList();
+    public List<Origin> getDisplayOrigins() {
+        return getOrigins().stream()
+                .filter(o -> !o.hidden())
+                .sorted(Comparator.comparing(o -> o.getName().getString()))
+                .toList();
     }
 
     public void clearRegistry() {
