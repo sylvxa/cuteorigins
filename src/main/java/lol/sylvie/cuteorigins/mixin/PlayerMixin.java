@@ -7,6 +7,7 @@ import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.power.effect.impl.*;
 import lol.sylvie.cuteorigins.state.StateManager;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -104,7 +105,8 @@ public class PlayerMixin {
 
         for (Effect effect : origin.getEffectsOfType(DamageMultiplierEffect.class)) {
             DamageMultiplierEffect multiplierEffect = (DamageMultiplierEffect) effect;
-            ResourceKey<DamageType> damageType = multiplierEffect.getDamageType(player).unwrapKey().orElse(null);
+            Holder<DamageType> damageTypeHolder = multiplierEffect.getDamageType(player);
+            ResourceKey<DamageType> damageType = damageTypeHolder == null ? null : damageTypeHolder.unwrapKey().orElse(null);
             boolean isAttacker = multiplierEffect.isAttacker();
             Entity attacker = source.getEntity();
             if (isAttacker && attacker == null) continue;

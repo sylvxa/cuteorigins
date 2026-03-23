@@ -49,7 +49,7 @@ public class DamageMultiplierEffect extends Effect {
     public static Effect fromJson(JsonObject object) {
         return new DamageMultiplierEffect(
                 object.get("multiplier").getAsFloat(),
-                JsonHelper.jsonStringToIdentifier(object.get("damage_type")),
+                object.has("damage_type") ? JsonHelper.jsonStringToIdentifier(object.get("damage_type")) : null,
                 Condition.fromJson(object.getAsJsonObject("condition")),
                 object.has("attacker") && object.get("attacker").getAsBoolean());
     }
