@@ -61,7 +61,7 @@ public class EventRegistry {
             if (origin != null) origin.onRespawn(newPlayer);
         });
 
-        ServerTickEvents.START_WORLD_TICK.register(world -> {
+        ServerTickEvents.START_LEVEL_TICK.register(world -> {
             world.players().forEach((player) -> {
                 Origin origin = StateManager.getPlayerState(player).getOrigin();
                 if (origin != null) origin.onTick(player);
@@ -102,7 +102,7 @@ InteractionResult.PASS;
         EntitySleepEvents.ALLOW_SLEEPING.register((playerEntity, blockPos) -> {
             Component message = canSleep(playerEntity);
             if (message != null) {
-                playerEntity.displayClientMessage(message, true);
+                playerEntity.sendOverlayMessage(message);
                 return Player.BedSleepingProblem.OTHER_PROBLEM;
             }
             return null;

@@ -9,14 +9,18 @@ import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.power.Power;
 import lol.sylvie.cuteorigins.state.StateManager;
 import lol.sylvie.cuteorigins.util.OriginRegistries;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.util.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,7 +30,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
 
@@ -72,13 +75,15 @@ public class KeybindItem extends SimplePolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
-        ItemStack out = PolymerItemUtils.createItemStack(itemStack, tooltipType, context);
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context, HolderLookup.Provider lookup) {
+        ItemStack out = PolymerItemUtils.createItemStack(itemStack, tooltipType, context, lookup);
         out.set(DataComponents.ITEM_MODEL, Identifier.withDefaultNamespace("lime_dye"));
         out.set(DataComponents.ITEM_NAME, Component.translatable("item.cuteorigins.keybind", "None").withStyle(ChatFormatting.GRAY));
 
-        ServerPlayer player = context.getPlayer();
-        if (player == null) return out;
+        Connection connection = context.orElseThrow(PacketContext.CONNECTION);
+        if (!(connection instanceof ServerPlayerConnection serverPlayerConnection)) return out;
+
+        ServerPlayer player = serverPlayerConnection.getPlayer();
         Power power = getPower(itemStack);
         if (power == null) return out;
 

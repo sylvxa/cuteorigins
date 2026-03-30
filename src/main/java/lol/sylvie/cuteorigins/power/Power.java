@@ -84,7 +84,7 @@ public class Power {
         if (!effect.hasAction()) return false; // This shouldn't happen unless someone does some weird item component stuff!
         if (isOnCooldown(player)) {
             float remaining = getCooldownRemaining(player) / 20f;
-            player.displayClientMessage(Component.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)), true);
+            player.sendOverlayMessage(Component.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)));
             return false;
         }
 

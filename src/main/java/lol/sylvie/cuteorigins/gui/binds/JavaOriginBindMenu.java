@@ -1,6 +1,7 @@
 package lol.sylvie.cuteorigins.gui.binds;
 
 import eu.pb4.sgui.api.elements.GuiElement;
+import eu.pb4.sgui.api.elements.SimpleGuiElement;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.state.StateManager;
@@ -30,7 +31,7 @@ public class JavaOriginBindMenu extends SimpleGui {
 
         int i = 0;
         for (ItemStack item : origin.getKeybinds()) {
-            GuiElement keybind = new GuiElement(item, (i1, clickType, slotActionType, slotGuiInterface) -> {
+            GuiElement keybind = new SimpleGuiElement(item, (i1, clickType, slotActionType, slotGuiInterface) -> {
                 player.addItem(item);
                 this.updateGui();
             });

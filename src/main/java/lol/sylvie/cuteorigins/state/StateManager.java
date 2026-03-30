@@ -9,7 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.storage.SavedDataStorage;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,10 +19,10 @@ public class StateManager extends SavedData {
     public HashMap<UUID, PlayerData> players;
 
     public static final Codec<StateManager> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.unboundedMap(UUIDUtil.AUTHLIB_CODEC, PlayerData.CODEC).fieldOf("players").forGetter(StateManager::getPlayers))
+                    Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerData.CODEC).fieldOf("players").forGetter(StateManager::getPlayers))
             .apply(instance, StateManager::new));
 
-    private static final SavedDataType<StateManager> TYPE = new SavedDataType<>(CuteOrigins.MOD_ID,
+    private static final SavedDataType<StateManager> TYPE = new SavedDataType<>(CuteOrigins.identifier("origins"),
             StateManager::new, CODEC, null);
 
     // Constructors
@@ -37,48 +38,10 @@ public class StateManager extends SavedData {
     public Map<UUID, PlayerData> getPlayers() {
         return players;
     }
-    /*
-    public static StateManager createFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        StateManager state = new StateManager();
-
-        NbtCompound playersNbt = tag.getCompound("players");
-        playersNbt.getKeys().forEach(key -> {
-            PlayerData playerData = new PlayerData();
-            NbtCompound playerNbt = playersNbt.getCompound(key);
-
-            NbtElement originElement = playerNbt.get("origin");
-            if (originElement != null) playerData.selectedOrigin = Identifier.of(originElement.asString());
-
-            NbtList shulkerElement = playerNbt.getList("shulker_inventory", NbtList.COMPOUND_TYPE);
-            if (shulkerElement != null) playerData.shulkerInventory.readNbtList(shulkerElement, registryLookup);
-
-            UUID uuid = UUID.fromString(key);
-            state.players.put(uuid, playerData);
-        });
-
-        return state;
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound playersNbt = new NbtCompound();
-
-        players.forEach((uuid, playerData) -> {
-            NbtCompound playerNbt = new NbtCompound();
-
-            if (playerData.selectedOrigin != null) playerNbt.putString("origin", playerData.selectedOrigin.toString());
-            playerNbt.put("shulker_inventory", playerData.shulkerInventory.toNbtList(registryLookup));
-
-            playersNbt.put(uuid.toString(), playerNbt);
-        });
-
-        nbt.put("players", playersNbt);
-        return nbt;
-    }*/
 
     public static StateManager getServerState(MinecraftServer server) {
-        DimensionDataStorage persistentStateManager = server.overworld().getDataStorage();
-        StateManager state = persistentStateManager.computeIfAbsent(TYPE);
+        SavedDataStorage savedDataStorage = server.overworld().getDataStorage();
+        StateManager state = savedDataStorage.computeIfAbsent(TYPE);
 
         state.setDirty();
 

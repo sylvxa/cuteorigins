@@ -17,9 +17,9 @@ public class TogglePhasingEffect extends Effect {
 
     @Override
     public void onAction(ServerPlayer player) {
-        Phasable phasable = player;
+        Phasable phasable = (Phasable) player;
         if (!phasable.origins$canPhase()) {
-            player.displayClientMessage(Component.translatable("message.cuteorigins.cannot_phase"), true);
+            player.sendOverlayMessage(Component.translatable("message.cuteorigins.cannot_phase"));
             return;
         }
 

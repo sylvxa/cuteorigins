@@ -23,7 +23,7 @@ public class DebugEffect extends Effect {
 
     @Override
     public InteractionResult onAttack(Player player, Entity target) {
-        player.displayClientMessage(Component.literal("Attack event"), false);
+        player.sendSystemMessage(Component.literal("Attack event"));
         return InteractionResult.PASS;
     }
 

@@ -42,7 +42,7 @@ public class Condition {
                 Identifier identifier = JsonHelper.jsonStringToIdentifier(params.get("item"));
                 predicate = ctx -> {
                     if (!(ctx.target instanceof LivingEntity living)) return false;
-                    return living.getItemBySlot(slot).getItemHolder().is(identifier);
+                    return living.getItemBySlot(slot).typeHolder().is(identifier);
                 };
             }
             case WATER -> {

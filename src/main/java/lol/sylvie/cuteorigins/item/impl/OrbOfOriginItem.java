@@ -5,6 +5,8 @@ import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.gui.OriginGui;
 import lol.sylvie.cuteorigins.state.StateManager;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -19,7 +21,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 public class OrbOfOriginItem extends SimplePolymerItem {
     public static Identifier IDENTIFIER = CuteOrigins.identifier("orb_of_origin");
@@ -34,8 +35,8 @@ public class OrbOfOriginItem extends SimplePolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
-        ItemStack out = PolymerItemUtils.createItemStack(itemStack, tooltipType, context);
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context, HolderLookup.Provider lookup) {
+        ItemStack out = PolymerItemUtils.createItemStack(itemStack, tooltipType, context, lookup);
         out.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         out.set(DataComponents.ITEM_MODEL, Identifier.withDefaultNamespace("slime_ball"));
         return out;

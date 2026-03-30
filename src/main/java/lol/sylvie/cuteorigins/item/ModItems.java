@@ -1,6 +1,6 @@
 package lol.sylvie.cuteorigins.item;
 
-import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
+import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.item.impl.KeybindItem;
 import lol.sylvie.cuteorigins.item.impl.OrbOfOriginItem;
@@ -16,7 +16,7 @@ public class ModItems {
     public static Item KEYBIND_ITEM = register(new KeybindItem(), KeybindItem.IDENTIFIER);
 
 
-    public static final CreativeModeTab ITEM_GROUP = PolymerItemGroupUtils.builder()
+    public static final CreativeModeTab ITEM_GROUP = PolymerCreativeModeTabUtils.builder()
             .title(Component.translatable("itemGroup.cuteorigins.item_group"))
             .icon(Items.SLIME_BALL::getDefaultInstance).displayItems((context, entries) -> {
                 entries.accept(ORB_OF_ORIGIN);
@@ -27,6 +27,6 @@ public class ModItems {
     }
 
     public static void initialize() {
-        PolymerItemGroupUtils.registerPolymerItemGroup(CuteOrigins.identifier("item_group"), ITEM_GROUP);
+        PolymerCreativeModeTabUtils.registerPolymerCreativeModeTab(CuteOrigins.identifier("item_group"), ITEM_GROUP);
     }
 }

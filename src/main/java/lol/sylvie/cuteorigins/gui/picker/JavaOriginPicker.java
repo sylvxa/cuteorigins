@@ -1,8 +1,10 @@
 package lol.sylvie.cuteorigins.gui.picker;
 
+import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import eu.pb4.sgui.api.gui.SlotBasedGui;
 import lol.sylvie.cuteorigins.CuteOrigins;
 import lol.sylvie.cuteorigins.gui.Icons;
 import lol.sylvie.cuteorigins.origin.Origin;
@@ -12,6 +14,7 @@ import lol.sylvie.cuteorigins.util.OriginRegistries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -75,35 +78,35 @@ public class JavaOriginPicker extends SimpleGui {
 
         // Pagination
         this.setSlot(45, new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(Icons.ARROW_LEFT)
+                .setProfileSkinTexture(Icons.ARROW_LEFT)
                 .setName(Component.translatable("menu.cuteorigins.back").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
-                .setCallback((i, clickType, slotActionType) -> {
+                .setCallback((i, type, action, gui) -> {
                     index--;
                     if (index < 0) index = origins.size() - 1;
                     updateGui();
                 }));
 
         this.setSlot(53, new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(Icons.ARROW_RIGHT)
+                .setProfileSkinTexture(Icons.ARROW_RIGHT)
                 .setName(Component.translatable("menu.cuteorigins.next").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
-                .setCallback((i, clickType, slotActionType) -> {
+                .setCallback((i, type, action, gui) -> {
                     index++;
                     if (index >= origins.size()) index = 0;
                     updateGui();
                 }));
 
         this.setSlot(49, new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(Icons.CHECKMARK)
+                .setProfileSkinTexture(Icons.CHECKMARK)
                 .setName(Component.translatable("menu.cuteorigins.choose").copy().withStyle(ChatFormatting.BOLD))
                 .setRarity(Rarity.COMMON)
                 .setLore(List.of(Component.translatable("menu.cuteorigins.beware").copy().withStyle(ChatFormatting.RED)))
-                .setCallback((i, clickType, slotActionType) -> {
+                .setCallback((i, type, action, gui) -> {
                     this.close();
                     StateManager.getPlayerState(player)
                             .setOrigin(player, origin);
-                    player.displayClientMessage(Component.translatable("menu.cuteorigins.success", origin.getName()), true);
+                    player.sendOverlayMessage(Component.translatable("menu.cuteorigins.success", origin.getName()));
                 }));
 
         int i = 19;
