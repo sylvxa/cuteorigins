@@ -9,8 +9,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.level.block.Block;
+import oshi.util.tuples.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ModifyHarvestEffect extends Effect {
         return itemInTagList(blacklistedTags, block) || blacklistedItems.contains(block);
     }
 
-    private static Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> loadTagItemList(List<JsonElement> jsonList) {
+    private static Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> loadTagItemList(List<JsonElement> jsonList) {
         ArrayList<Block> items = new ArrayList<>();
         ArrayList<TagKey<Block>> tags = new ArrayList<>();
         for (JsonElement element : jsonList) {
@@ -56,12 +57,12 @@ public class ModifyHarvestEffect extends Effect {
                 items.add(BuiltInRegistries.BLOCK.getValue(id));
             }
         }
-        return new Tuple<>(items, tags);
+        return new Pair<>(items, tags);
     }
 
     public static Effect fromJson(JsonObject object) {
-        Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> whitelist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
-        Tuple<ArrayList<Block>, ArrayList<TagKey<Block>>> blacklist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
+        Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> whitelist = new Pair<>(new ArrayList<>(), new ArrayList<>());
+        Pair<ArrayList<Block>, ArrayList<TagKey<Block>>> blacklist = new Pair<>(new ArrayList<>(), new ArrayList<>());
 
         if (object.has("whitelist")) whitelist = loadTagItemList(object.getAsJsonArray("whitelist").asList());
         if (object.has("blacklist")) blacklist = loadTagItemList(object.getAsJsonArray("blacklist").asList());

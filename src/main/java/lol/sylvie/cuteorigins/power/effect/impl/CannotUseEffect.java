@@ -9,8 +9,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
+import oshi.util.tuples.Pair;
+
 import java.util.*;
 
 public class CannotUseEffect extends Effect {
@@ -42,7 +43,7 @@ public class CannotUseEffect extends Effect {
         return !blacklistedItems.contains(item);
     }
 
-    private static Tuple<ArrayList<Item>, ArrayList<TagKey<Item>>> loadTagItemList(List<JsonElement> jsonList) {
+    private static Pair<ArrayList<Item>, ArrayList<TagKey<Item>>> loadTagItemList(List<JsonElement> jsonList) {
         ArrayList<Item> items = new ArrayList<>();
         ArrayList<TagKey<Item>> tags = new ArrayList<>();
         for (JsonElement element : jsonList) {
@@ -54,12 +55,12 @@ public class CannotUseEffect extends Effect {
                 items.add(BuiltInRegistries.ITEM.getValue(id));
             }
         }
-        return new Tuple<>(items, tags);
+        return new Pair<>(items, tags);
     }
 
     public static Effect fromJson(JsonObject object) {
-        Tuple<ArrayList<Item>, ArrayList<TagKey<Item>>> whitelist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
-        Tuple<ArrayList<Item>, ArrayList<TagKey<Item>>> blacklist = new Tuple<>(new ArrayList<>(), new ArrayList<>());
+        Pair<ArrayList<Item>, ArrayList<TagKey<Item>>> whitelist = new Pair<>(new ArrayList<>(), new ArrayList<>());
+        Pair<ArrayList<Item>, ArrayList<TagKey<Item>>> blacklist = new Pair<>(new ArrayList<>(), new ArrayList<>());
 
         if (object.has("whitelist")) whitelist = loadTagItemList(object.getAsJsonArray("whitelist").asList());
         if (object.has("blacklist")) blacklist = loadTagItemList(object.getAsJsonArray("blacklist").asList());

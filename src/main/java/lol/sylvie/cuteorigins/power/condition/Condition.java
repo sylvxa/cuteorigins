@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lol.sylvie.cuteorigins.mixininterfaces.Phasable;
 import lol.sylvie.cuteorigins.util.JsonHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +37,7 @@ public class Condition {
 
     public Condition(CheckType checkType, JsonObject params, boolean inverted) {
         switch (checkType) {
-            case ENTITY_TYPE -> predicate = ctx -> ctx.target.getType().equals(EntityType.byString(params.get("type").getAsString()).orElseThrow());
+            case ENTITY_TYPE -> predicate = ctx -> ctx.target.getType().equals(BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(params.get("type").getAsString())).orElseThrow().value());
             case EQUIPMENT -> {
                 EquipmentSlot slot = EquipmentSlot.byName(params.get("slot").getAsString().toLowerCase(Locale.ROOT));
                 Identifier identifier = JsonHelper.jsonStringToIdentifier(params.get("item"));

@@ -20,6 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.util.*;
 import net.minecraft.world.InteractionHand;
@@ -42,7 +43,7 @@ public class KeybindItem extends SimplePolymerItem {
                         .setId(ResourceKey.create(Registries.ITEM, IDENTIFIER))
                         .stacksTo(1)
                         .rarity(Rarity.COMMON),
-                Items.LIME_DYE);
+                Items.DYE.lime());
     }
 
     public static Power getPower(ItemStack stack) {
@@ -81,9 +82,9 @@ public class KeybindItem extends SimplePolymerItem {
         out.set(DataComponents.ITEM_NAME, Component.translatable("item.cuteorigins.keybind", "None").withStyle(ChatFormatting.GRAY));
 
         Connection connection = context.orElseThrow(PacketContext.CONNECTION);
-        if (!(connection instanceof ServerPlayerConnection serverPlayerConnection)) return out;
+        if (!(connection.getPacketListener() instanceof ServerGamePacketListenerImpl listener)) return out;
 
-        ServerPlayer player = serverPlayerConnection.getPlayer();
+        ServerPlayer player = listener.getPlayer();
         Power power = getPower(itemStack);
         if (power == null) return out;
 

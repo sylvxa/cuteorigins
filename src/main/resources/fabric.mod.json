@@ -41,7 +41,7 @@
 
   "custom": {
     "loom:injected_interfaces": {
-      "net/minecraft/class_3222": ["lol/sylvie/cuteorigins/mixininterfaces/Phasable"]
+      "net/minecraft/server/level/ServerPlayer": ["lol/sylvie/cuteorigins/mixininterfaces/Phasable"]
     }
   }
 }

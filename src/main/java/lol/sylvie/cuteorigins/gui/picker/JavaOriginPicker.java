@@ -57,7 +57,7 @@ public class JavaOriginPicker extends SimpleGui {
         }
 
         // Border
-        ItemStack borderStack = Items.MAGENTA_STAINED_GLASS_PANE.getDefaultInstance();
+        ItemStack borderStack = Items.STAINED_GLASS_PANE.magenta().getDefaultInstance();
         for (int i = 0; i < 9; i++) {
             this.setSlot(i, borderStack);
             this.setSlot(i + (9 * 5), borderStack);
