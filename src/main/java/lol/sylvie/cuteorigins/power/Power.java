@@ -17,18 +17,20 @@ public class Power {
     private final boolean visible;
     private final boolean negative;
     private final Integer cooldown;
+    private final boolean customKeybindModels;
     private final HashMap<UUID, Integer> cooldownMap = new HashMap<>();
 
     private final Effect effect;
 
     private static final DecimalFormat SECOND_FORMAT = new DecimalFormat("0.0");
 
-    protected Power(Identifier identifier, boolean visible, boolean negative, Effect effect, Integer cooldown) {
+    protected Power(Identifier identifier, boolean visible, boolean negative, Effect effect, Integer cooldown, boolean customKeybindModels) {
         this.identifier = identifier;
         this.visible = visible;
         this.negative = negative;
         this.effect = effect;
         this.cooldown = cooldown;
+        this.customKeybindModels = customKeybindModels;
     }
 
     public static Power fromJson(Identifier identifier, JsonObject object) {
@@ -41,7 +43,12 @@ public class Power {
             cooldown = object.get("cooldown").getAsInt();
         }
 
-        return new Power(identifier, visible, negative, OriginRegistries.EFFECT_REGISTRY.getEffect(effect, object), cooldown);
+        boolean customKeybindModel = false;
+        if (object.has("custom_keybind_model")) {
+            customKeybindModel = object.get("custom_keybind_model").getAsBoolean();
+        }
+
+        return new Power(identifier, visible, negative, OriginRegistries.EFFECT_REGISTRY.getEffect(effect, object), cooldown, customKeybindModel);
     }
 
     public Identifier getIdentifier() {
@@ -64,13 +71,17 @@ public class Power {
         return this.cooldown;
     }
 
+    public boolean hasCustomKeybindModels() {
+        return customKeybindModels;
+    }
+
     public boolean hasCooldown() {
         return this.cooldown != null;
     }
 
     public int getCooldownRemaining(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
-        return (cooldownMap.getOrDefault(player.getUUID(), 0) + cooldown) - server.getTickCount();
+        return (cooldownMap.getOrDefault(player.getUUID(), -cooldown) + cooldown) - server.getTickCount();
     }
 
     public boolean isOnCooldown(ServerPlayer player) {
@@ -78,13 +89,17 @@ public class Power {
         return getCooldownRemaining(player) > 0;
     }
 
+    public void sendCooldownOverlay(ServerPlayer player) {
+        float remaining = getCooldownRemaining(player) / 20f;
+        player.sendOverlayMessage(Component.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)));
+    }
+
     public boolean attemptAction(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
 
         if (!effect.hasAction()) return false; // This shouldn't happen unless someone does some weird item component stuff!
         if (isOnCooldown(player)) {
-            float remaining = getCooldownRemaining(player) / 20f;
-            player.sendOverlayMessage(Component.translatable("message.cuteorigins.cooldown", SECOND_FORMAT.format(remaining)));
+            sendCooldownOverlay(player);
             return false;
         }
 

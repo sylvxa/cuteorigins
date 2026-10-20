@@ -53,6 +53,7 @@ public class EffectRegistry {
         putEffect(ShulkerInventoryEffect.class);
         putEffect(ExhaustionEffect.class);
 
+        putEffect(ModifyMiningSpeedEffect.class);
         putEffect(ModifyHarvestEffect.class);
         putEffect(SleepingConditionEffect.class);
 

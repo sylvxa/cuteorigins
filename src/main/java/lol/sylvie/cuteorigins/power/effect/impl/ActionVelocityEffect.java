@@ -21,7 +21,7 @@ public class ActionVelocityEffect extends Effect {
     @Override
     public void onAction(ServerPlayer player) {
         player.push(velocity);
-        player.hurtMarked = true;
+        player.syncVelocity = true;
     }
 
     public static Effect fromJson(JsonObject object) {

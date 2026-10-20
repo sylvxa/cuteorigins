@@ -6,6 +6,7 @@ import lol.sylvie.cuteorigins.item.ModComponents;
 import lol.sylvie.cuteorigins.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class CuteOrigins implements ModInitializer {
         ModComponents.initialize();
         ModItems.initialize();
 
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new OriginResourceReloadListener());
+        ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(CuteOrigins.MOD_ID, "origin_data"), new OriginResourceReloadListener());
     }
 
     public static Identifier identifier(String path) {

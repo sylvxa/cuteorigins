@@ -116,4 +116,22 @@ public class PlayerMixin {
         }
         return value;
     }
+
+    @ModifyReturnValue(method = "getDestroySpeed", at = @At("RETURN"))
+    public float origins$overrideDestroySpeed(float original, @Local(argsOnly = true, name = "state") BlockState state) {
+        Player thisPlayer = (Player) (Object) this;
+        if (!(thisPlayer instanceof ServerPlayer player)) return original;
+        Origin origin = StateManager.getPlayerState(player).getOrigin();
+        if (origin == null) return original;
+
+        float newValue = original;
+        for (Effect effect : origin.getEffectsOfType(ModifyMiningSpeedEffect.class)) {
+            ModifyMiningSpeedEffect overrideEffect = (ModifyMiningSpeedEffect) effect;
+            if (!overrideEffect.blockMatches(state.getBlock())) continue;
+            float value = overrideEffect.getValue();
+            newValue = Math.max(value, newValue);
+
+        }
+        return newValue;
+    }
 }

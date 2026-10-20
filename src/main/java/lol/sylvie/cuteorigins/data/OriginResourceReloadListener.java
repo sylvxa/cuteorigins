@@ -9,13 +9,9 @@ import lol.sylvie.cuteorigins.util.OriginRegistries;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
-public class OriginResourceReloadListener implements SimpleSynchronousResourceReloadListener {
-    @Override
-    public Identifier getFabricId() {
-        return Identifier.fromNamespaceAndPath(CuteOrigins.MOD_ID, "origin_data");
-    }
-
+public class OriginResourceReloadListener implements ResourceManagerReloadListener {
     @Override
     public void onResourceManagerReload(ResourceManager manager) {
         CuteOrigins.LOGGER.info("Loading resources...");

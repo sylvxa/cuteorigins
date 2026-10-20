@@ -28,7 +28,7 @@ public class TogglePhasingEffect extends Effect {
 
         if (phasing) {
             player.push(0d, -0.1d, 0d);
-            player.hurtMarked = true;
+            player.syncVelocity = true;
         }
     }
 

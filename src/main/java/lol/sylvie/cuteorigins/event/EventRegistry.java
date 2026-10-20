@@ -1,13 +1,14 @@
 package lol.sylvie.cuteorigins.event;
 
+import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import lol.sylvie.cuteorigins.command.OriginCommand;
 import lol.sylvie.cuteorigins.gui.OriginGui;
-import lol.sylvie.cuteorigins.item.ModComponents;
+import lol.sylvie.cuteorigins.item.ItemUpdates;
 import lol.sylvie.cuteorigins.item.ModItems;
-import lol.sylvie.cuteorigins.item.impl.KeybindItem;
 import lol.sylvie.cuteorigins.origin.Origin;
 import lol.sylvie.cuteorigins.power.effect.Effect;
 import lol.sylvie.cuteorigins.power.effect.impl.CannotUseEffect;
+import lol.sylvie.cuteorigins.power.effect.impl.ModifyMiningSpeedEffect;
 import lol.sylvie.cuteorigins.power.effect.impl.SleepingConditionEffect;
 import lol.sylvie.cuteorigins.state.StateManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -26,8 +27,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import java.util.ArrayList;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class EventRegistry {
     public static boolean cannotUse(Item item, Player user) {
@@ -55,6 +56,20 @@ public class EventRegistry {
         return null;
     }
 
+    public static boolean overrideMiningSpeed(BlockState block, Player user) {
+        if (!(user instanceof ServerPlayer)) return false;
+        Origin origin = StateManager.getPlayerState(user).getOrigin();
+        if (origin == null) return false;
+        for (Effect effect : origin.getEffectsOfType(ModifyMiningSpeedEffect.class)) {
+            ModifyMiningSpeedEffect overrideEffect = (ModifyMiningSpeedEffect) effect;
+            if (overrideEffect.blockMatches(block.getBlock()) && overrideEffect.getValue() == user.getDestroySpeed(block)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static void register() {
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             Origin origin = StateManager.getPlayerState(newPlayer).getOrigin();
@@ -68,14 +83,7 @@ public class EventRegistry {
             });
 
             MinecraftServer server = world.getServer();
-            ArrayList<ItemStack> buffer = new ArrayList<>();
-            KeybindItem.UPDATE_MAP.forEach((stack, timestamp) -> {
-                if (server.getTickCount() >= timestamp) {
-                    stack.set(ModComponents.ON_COOLDOWN, false);
-                    buffer.add(stack);
-                }
-            });
-            buffer.forEach(stack -> KeybindItem.UPDATE_MAP.remove(stack));
+            ItemUpdates.tick(server);
         });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
@@ -92,8 +100,7 @@ public class EventRegistry {
         });
 
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!(player instanceof ServerPlayer)) return 
-InteractionResult.PASS;
+            if (!(player instanceof ServerPlayer)) return InteractionResult.PASS;
             Origin origin = StateManager.getPlayerState(player).getOrigin();
             if (origin != null) return origin.onAttack(player, entity);
             return InteractionResult.PASS;
@@ -111,6 +118,10 @@ InteractionResult.PASS;
         UseItemCallback.EVENT.register((playerEntity, world, hand) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
         UseBlockCallback.EVENT.register((playerEntity, world, hand, blockHitResult) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
         UseEntityCallback.EVENT.register((playerEntity, world, hand, entity, entityHitResult) -> cannotUse(playerEntity.getItemInHand(hand).getItem(), playerEntity) ? InteractionResult.CONSUME : InteractionResult.PASS);
+
+        PolymerBlockUtils.SERVER_SIDE_MINING_CHECK.register((state, pos, player) -> {
+            return overrideMiningSpeed(state, player);
+        });
 
         CommandRegistrationCallback.EVENT.register(OriginCommand::register);
     }

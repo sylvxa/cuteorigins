@@ -14,16 +14,9 @@ public class ModComponents {
             DataComponentType.<String>builder().persistent(Codec.STRING).build()
     );
 
-    public static final DataComponentType<Boolean> ON_COOLDOWN = Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            CuteOrigins.identifier("power_on_cooldown"),
-            DataComponentType.<Boolean>builder().persistent(Codec.BOOL).build()
-    );
-
     public static void initialize() {
         CuteOrigins.LOGGER.info("Registering {} components", CuteOrigins.MOD_ID);
 
         PolymerComponent.registerDataComponent(POWER_KEYBIND);
-        PolymerComponent.registerDataComponent(ON_COOLDOWN);
     }
 }

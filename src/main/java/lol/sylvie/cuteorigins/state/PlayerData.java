@@ -49,7 +49,7 @@ public class PlayerData {
         this.selectedOrigin = origin.identifier();
         origin.onChosen(player);
 
-        player.getInventory().clearOrCountMatchingItems(i -> i.is(ModItems.KEYBIND_ITEM), -1, player.inventoryMenu.getCraftSlots());
+        player.getInventory().clearOrCountMatchingItems(i -> i.is(ModItems.KEYBIND_ITEM), false,-1, player.inventoryMenu.getCraftSlots());
         for (ItemStack item : origin.getKeybinds()) {
             player.addItem(item);
         }
