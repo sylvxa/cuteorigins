@@ -62,7 +62,7 @@ public class EventRegistry {
         if (origin == null) return false;
         for (Effect effect : origin.getEffectsOfType(ModifyMiningSpeedEffect.class)) {
             ModifyMiningSpeedEffect overrideEffect = (ModifyMiningSpeedEffect) effect;
-            if (overrideEffect.blockMatches(block.getBlock()) && overrideEffect.getValue() == user.getDestroySpeed(block)) {
+            if (overrideEffect.blockMatches(block.getBlock()) && (overrideEffect.getValue() == 0 || overrideEffect.getValue() == user.getDestroySpeed(block))) {
                 return true;
             }
         }

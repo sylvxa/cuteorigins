@@ -1,0 +1,12 @@
+{
+  "effect": "cuteorigins:modify_mining_speed",
+  "visible": false,
+  "negative": false,
+  "value": 0,
+  "matches": [
+    {
+      "type": "tag",
+      "id": "c:stones"
+    }
+  ]
+}

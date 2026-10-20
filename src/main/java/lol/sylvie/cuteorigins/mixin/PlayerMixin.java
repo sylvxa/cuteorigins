@@ -129,8 +129,7 @@ public class PlayerMixin {
             ModifyMiningSpeedEffect overrideEffect = (ModifyMiningSpeedEffect) effect;
             if (!overrideEffect.blockMatches(state.getBlock())) continue;
             float value = overrideEffect.getValue();
-            newValue = Math.max(value, newValue);
-
+            newValue = overrideEffect.isMin() ? Math.min(value, newValue) : Math.max(value, newValue);
         }
         return newValue;
     }
